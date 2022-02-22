@@ -1,2 +1,5 @@
-package com.example.restaurantapi.model;public enum UserRole {
+package com.example.restaurantapi.model;
+
+public enum UserRole {
+    ADMIN, USER
 }
