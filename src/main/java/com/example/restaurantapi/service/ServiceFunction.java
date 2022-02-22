@@ -2,6 +2,7 @@ package com.example.restaurantapi.service;
 
 
 import com.example.restaurantapi.model.User;
+import io.grpc.Server;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,6 +41,7 @@ public class ServiceFunction {
 
         return matcher.find();
     }
+
 
     public static boolean enableUser(User user) {
         return user.isEnabled();

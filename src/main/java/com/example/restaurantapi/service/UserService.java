@@ -2,8 +2,10 @@ package com.example.restaurantapi.service;
 
 import com.example.restaurantapi.dto.user.LoginUserDto;
 import com.example.restaurantapi.dto.user.RegisterUserDto;
+import com.example.restaurantapi.dto.user.ResendMailDto;
 import com.example.restaurantapi.model.ConfirmationToken;
 import com.example.restaurantapi.model.User;
+import com.example.restaurantapi.repository.ConfirmationTokenRepository;
 import com.example.restaurantapi.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
@@ -13,6 +15,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.sql.rowset.serial.SerialClob;
 import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +30,7 @@ public class UserService implements UserDetailsService {
     private final ValidationService validationService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ConfirmationTokenService confirmationTokenService;
+    private final ConfirmationTokenRepository confirmationTokenRepository;
     private final EmailService emailService;
     private List<String> validationResult = new ArrayList<>();
 
@@ -48,7 +52,7 @@ public class UserService implements UserDetailsService {
                 user.setPassword(encryptedPassword);
                 final User createdUser = userRepository.save(user);
                 final ConfirmationToken confirmationToken = new ConfirmationToken(createdUser);
-                confirmationTokenService.saveConfirmationToke(confirmationToken);
+                confirmationTokenService.saveConfirmationToken(confirmationToken);
 
                 sendConfirmationToken(user.getEmail(), confirmationToken.getConfirmationToken());
 
@@ -72,12 +76,29 @@ public class UserService implements UserDetailsService {
         String password = "";
         String login = "";
         Optional<User> userOptional = Optional.empty();;
-        boolean isPasswordMatches = false;
+        validationResult.clear();
 
-        if (!ServiceFunction.isNull(loginUserDto.getPassword()))
+        if (!ServiceFunction.isNull(loginUserDto.getPassword())) {
             password = loginUserDto.getPassword();
-        if (!ServiceFunction.isNull(loginUserDto.getLogin()))
+        } else {
+            ret.setStatus(0);
+            validationResult.add("Proszę uzupełnić hasło");
+        }
+
+        if (!ServiceFunction.isNull(loginUserDto.getLogin())) {
             login = loginUserDto.getLogin();
+        } else {
+            ret.setStatus(0);
+            validationResult.add("Proszę uzupełnić login");
+        }
+
+        if (validationResult.size() > 0) {
+            ret.setStatus(0);
+            ret.setErrorList(validationResult);
+            ret.setValue((Object) loginUserDto);
+            return ret;
+        }
+
 
         Object[] userExist = userExist(loginUserDto);
         if (!(Boolean)userExist[0]) {
@@ -112,6 +133,59 @@ public class UserService implements UserDetailsService {
 
     }
 
+    public ServiceReturn resendMail(ResendMailDto dto) {
+        ServiceReturn ret = new ServiceReturn();
+        ret = loginUser(LoginUserDto.of(dto));
+
+        if (ret.getStatus() == 1) {
+            User user = new User();
+            user = (User) ret.getValue();
+            final ConfirmationToken confirmationToken = new ConfirmationToken(user);
+            confirmationTokenService.saveConfirmationToken(confirmationToken);
+
+            sendConfirmationToken(user.getEmail(), confirmationToken.getConfirmationToken());
+            ret.setStatus(1);
+            return ret;
+        }
+
+        return ret;
+
+    }
+
+    public ServiceReturn forgotPassword(String email) {
+        ServiceReturn ret = new ServiceReturn();
+        String userEmail = "";
+        if (!ServiceFunction.isNull(email)) {
+            userEmail = email;
+        } else {
+            ret.setStatus(-1);
+            ret.setMessage("Proszę wprowadzić email");
+            return ret;
+        }
+
+        Optional<User> optionalUser = userRepository.findByEmail(userEmail);
+        if (optionalUser.isEmpty()) {
+            ret.setStatus(-1);
+            ret.setMessage("Nie znaleziono użytkownika o podanym email");
+            return ret;
+        }
+
+        User user = optionalUser.get();
+        final ConfirmationToken forgotPasswordToken = new ConfirmationToken(user);
+        confirmationTokenService.saveConfirmationToken(forgotPasswordToken);
+        sendForgotPasswordToken(user.getEmail(), forgotPasswordToken.getConfirmationToken());
+
+        ret.setMessage("Email do zresetowania hasła został wysłany");
+        return ret;
+
+
+    }
+
+
+    /*
+    ret[0]: True = exist, False = not exist
+    ret[1]: Optional User object
+     */
     public Object[] userExist(LoginUserDto dto) {
         Object[] ret = new Object[2];
         User user = new User();
@@ -143,6 +217,44 @@ public class UserService implements UserDetailsService {
         simpleMailMessage.setText(mailMessage + activationLink);
 
         emailService.sendEmail(simpleMailMessage);
+
+    }
+
+    public void sendForgotPasswordToken(String userMail, String token) {
+        final SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+        String forgotPasswordLink = "http://127.0.0.1:8080/user/forgot-password?token=" + token;
+        String mailMessage = "Kliknij w link aby zmienić hasło \n";
+        simpleMailMessage.setTo(userMail);
+        simpleMailMessage.setSubject("Forgot password");
+        simpleMailMessage.setFrom("<MAIL>");
+        simpleMailMessage.setText(mailMessage + forgotPasswordLink);
+
+        emailService.sendEmail(simpleMailMessage);
+    }
+
+    public ServiceReturn changePassword(String token, String password) {
+        ServiceReturn ret = new ServiceReturn();
+        String newPassword = "";
+        if (ServiceFunction.isNull(password)) {
+            ret.setStatus(-1);
+            ret.setMessage("Proszę podać hasło");
+        }
+
+        Optional<ConfirmationToken> confirmationTokenOptional = confirmationTokenRepository.findConfirmationTokenByConfirmationToken(token);
+        if (confirmationTokenOptional.isEmpty()) {
+            ret.setStatus(-1);
+            ret.setMessage("nie znaleziono takiego tokenu");
+            return ret;
+        }
+
+        User user = confirmationTokenOptional.get().getUser();
+        final String encryptedPassword = bCryptPasswordEncoder.encode(password);
+        user.setPassword(encryptedPassword);
+        userRepository.save(user);
+        confirmationTokenService.deleteForgotPasswordToken(confirmationTokenOptional.get().getId());
+        ret.setStatus(1);
+        ret.setMessage("Hasło pomyślnie zmienione");
+        return ret;
 
     }
 

@@ -1,5 +1,6 @@
 package com.example.restaurantapi.model;
 
+import com.example.restaurantapi.dto.user.LoginUserDto;
 import com.example.restaurantapi.dto.user.RegisterUserDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -105,5 +106,7 @@ public class User implements UserDetails, Serializable {
 
         return user;
     }
+
+
 
 }
