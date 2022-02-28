@@ -4,6 +4,9 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * @Author Szymon Królik
+ */
 @Data
 public class ServiceReturn {
     public Object value;

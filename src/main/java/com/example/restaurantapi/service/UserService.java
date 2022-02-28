@@ -21,7 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-
+/**
+ * @Author Szymon Królik
+ */
 @Service
 @AllArgsConstructor
 public class UserService implements UserDetailsService {
@@ -36,7 +38,7 @@ public class UserService implements UserDetailsService {
 
     public ServiceReturn createUser(RegisterUserDto registerUserDto) {
         ServiceReturn ret = new ServiceReturn();
-
+        validationResult.clear();
         Optional<User> optionalUser = userRepository.findByEmail(registerUserDto.getEmail());
         if (optionalUser.isEmpty()) {
             validationResult = validationService.registerValidation(registerUserDto);

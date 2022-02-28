@@ -5,6 +5,9 @@ import com.example.restaurantapi.repository.ConfirmationTokenRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+/**
+ * @Author Szymon Królik
+ */
 @Service
 @AllArgsConstructor
 public class ConfirmationTokenService {

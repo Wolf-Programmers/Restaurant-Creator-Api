@@ -60,7 +60,7 @@ public class User implements UserDetails, Serializable {
     private Date updatedAt;
 
     //Restaurant FK
-    @OneToMany(mappedBy = "restaurant_id")
+    @OneToMany(mappedBy = "user_id")
     private Set<Restaurant> restaurants;
 
 

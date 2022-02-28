@@ -3,10 +3,11 @@ package com.example.restaurantapi.dto.user;
 import com.example.restaurantapi.model.User;
 import lombok.Data;
 
+/**
+ * @Author Szymon Królik
+ */
 @Data
 public class LoginUserDto {
-//    private String phoneNumber;
-//    private String email;
     private String login;
     private String password;
 

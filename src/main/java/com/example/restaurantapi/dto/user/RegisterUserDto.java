@@ -2,6 +2,9 @@ package com.example.restaurantapi.dto.user;
 
 import lombok.Data;
 
+/**
+ * @Author Szymon Królik
+ */
 @Data
 public class RegisterUserDto {
 

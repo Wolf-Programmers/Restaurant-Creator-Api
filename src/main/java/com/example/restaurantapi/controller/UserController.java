@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
+/**
+ * @Author Szymon Królik
+ */
 @RequestMapping("/user")
 @RestController
 @RequiredArgsConstructor
