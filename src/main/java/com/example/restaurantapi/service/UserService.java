@@ -1,5 +1,6 @@
 package com.example.restaurantapi.service;
 
+import com.example.restaurantapi.dto.user.LoggeduserDto;
 import com.example.restaurantapi.dto.user.LoginUserDto;
 import com.example.restaurantapi.dto.user.RegisterUserDto;
 import com.example.restaurantapi.dto.user.ResendMailDto;
@@ -36,6 +37,12 @@ public class UserService implements UserDetailsService {
     private final EmailService emailService;
     private List<String> validationResult = new ArrayList<>();
 
+    /**
+     * Save user in database
+     * @author Szymon Królik
+     * @param registerUserDto
+     * @return createdUser
+     */
     public ServiceReturn createUser(RegisterUserDto registerUserDto) {
         ServiceReturn ret = new ServiceReturn();
         validationResult.clear();
@@ -73,6 +80,12 @@ public class UserService implements UserDetailsService {
 
     }
 
+    /**
+     * Login user
+     * @author Szymon Królik
+     * @param loginUserDto
+     * @return user
+     */
     public ServiceReturn loginUser(LoginUserDto loginUserDto) {
         ServiceReturn ret = new ServiceReturn();
         String password = "";
@@ -118,8 +131,9 @@ public class UserService implements UserDetailsService {
         }
 
         if (bCryptPasswordEncoder.matches(password,user.getPassword())) {
+            LoggeduserDto dto = LoggeduserDto.of(user);
             ret.setStatus(1);
-            ret.setValue(user);
+            ret.setValue(dto);
             return ret;
         } else {
             ret.setStatus(0);
@@ -135,6 +149,12 @@ public class UserService implements UserDetailsService {
 
     }
 
+    /**
+     * Resend register mail confirmation
+     * @author Szymon Królik
+     * @param dto
+     * @return only status
+     */
     public ServiceReturn resendMail(ResendMailDto dto) {
         ServiceReturn ret = new ServiceReturn();
         ret = loginUser(LoginUserDto.of(dto));
@@ -154,6 +174,12 @@ public class UserService implements UserDetailsService {
 
     }
 
+    /**
+     * Send email with link to reset user password
+     * @author Szymon Królik
+     * @param email
+     * @return
+     */
     public ServiceReturn forgotPassword(String email) {
         ServiceReturn ret = new ServiceReturn();
         String userEmail = "";
@@ -177,6 +203,7 @@ public class UserService implements UserDetailsService {
         confirmationTokenService.saveConfirmationToken(forgotPasswordToken);
         sendForgotPasswordToken(user.getEmail(), forgotPasswordToken.getConfirmationToken());
 
+        ret.setStatus(1);
         ret.setMessage("Email do zresetowania hasła został wysłany");
         return ret;
 
@@ -209,6 +236,13 @@ public class UserService implements UserDetailsService {
         return ret;
     }
 
+
+    /**
+     * Send register confirmation token
+     * @author Szymon Królik
+     * @param userMail
+     * @param token
+     */
     public void sendConfirmationToken(String userMail, String token) {
         final SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         String activationLink = "http://127.0.0.1:8080/user/confirm?token=" + token;
@@ -222,6 +256,12 @@ public class UserService implements UserDetailsService {
 
     }
 
+    /**
+     * Send token to user for reset password
+     * @author Szymon Królik
+     * @param userMail
+     * @param token
+     */
     public void sendForgotPasswordToken(String userMail, String token) {
         final SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         String forgotPasswordLink = "http://127.0.0.1:8080/user/forgot-password?token=" + token;
@@ -234,6 +274,13 @@ public class UserService implements UserDetailsService {
         emailService.sendEmail(simpleMailMessage);
     }
 
+    /**
+     * Allows to change user password with correct token
+     * @author Szymon Królik
+     * @param token
+     * @param password
+     * @return
+     */
     public ServiceReturn changePassword(String token, String password) {
         ServiceReturn ret = new ServiceReturn();
         String newPassword = "";
@@ -260,6 +307,12 @@ public class UserService implements UserDetailsService {
 
     }
 
+    /**
+     * Set enabled on true for user after confirm activation link
+     * @author Szymon Królik
+     * @author Szymon Królik
+     * @param confirmationToken
+     */
     public void confirmUser(ConfirmationToken confirmationToken) {
         final User user = confirmationToken.getUser();
 

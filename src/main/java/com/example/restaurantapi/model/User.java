@@ -15,10 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Set;
+import java.util.*;
 
 @Data
 @Entity
@@ -61,7 +58,7 @@ public class User implements UserDetails, Serializable {
 
     //Restaurant FK
     @OneToMany(mappedBy = "user_id")
-    private Set<Restaurant> restaurants;
+    private List<Restaurant> restaurants;
 
 
     @Override

@@ -4,11 +4,9 @@ import com.example.restaurantapi.dto.restaurant.AddRestaurantDto;
 import com.example.restaurantapi.service.RestaurantService;
 import com.example.restaurantapi.service.ServiceReturn;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.security.Provider;
 import java.text.ParseException;
 
 /**
@@ -20,8 +18,25 @@ import java.text.ParseException;
 public class RestaurantController {
 
     private final RestaurantService restaurantService;
+
     @PostMapping("/add")
     public ServiceReturn addRestaurant(@RequestBody AddRestaurantDto dto) throws ParseException {
         return restaurantService.addRestaurantToUserAccount(dto);
+    }
+
+    @GetMapping("/info")
+    public ServiceReturn getRestaurant(@RequestParam("id") int id) {
+        Long longId =Long.valueOf(id);
+        return restaurantService.getRestaurant(longId);
+    }
+
+    @GetMapping("/info-name")
+    public ServiceReturn getRestaurant(@RequestParam("name") String name) {
+        return restaurantService.getRestaurantByName(name);
+    }
+
+    @GetMapping("info-city")
+    public ServiceReturn getRestaurantByCity(@RequestParam("city") String city) {
+        return restaurantService.getRestaurantsByCity(city);
     }
 }

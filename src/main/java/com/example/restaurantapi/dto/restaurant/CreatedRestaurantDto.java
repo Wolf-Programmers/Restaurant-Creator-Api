@@ -1,7 +1,9 @@
 package com.example.restaurantapi.dto.restaurant;
 
 import com.example.restaurantapi.biznesobject.OpeningTimes;
+import com.example.restaurantapi.biznesobject.RestaurantTypes;
 import com.example.restaurantapi.model.Restaurant;
+import com.example.restaurantapi.model.RestaurantType;
 import lombok.Data;
 
 import java.util.List;
@@ -17,6 +19,8 @@ public class CreatedRestaurantDto {
     private String email;
     public String voivodeship;
     private List<OpeningTimes> openingTimes;
+    private List<RestaurantTypes> restaurantTypes;
+
 
     public static CreatedRestaurantDto of(Restaurant restaurant) {
         CreatedRestaurantDto dto = new CreatedRestaurantDto();

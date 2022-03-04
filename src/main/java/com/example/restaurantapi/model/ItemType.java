@@ -3,6 +3,7 @@ package com.example.restaurantapi.model;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -18,5 +19,5 @@ public class ItemType {
 
     @OneToMany(cascade=CascadeType.ALL)
     @JoinColumn(name="item_id")
-    private Set<Item> items;
+    private List<Item> items;
 }

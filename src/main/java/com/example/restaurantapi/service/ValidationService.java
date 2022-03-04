@@ -1,6 +1,7 @@
 package com.example.restaurantapi.service;
 
 
+import com.example.restaurantapi.dto.menu.CreateMenuDto;
 import com.example.restaurantapi.dto.restaurant.AddRestaurantDto;
 import com.example.restaurantapi.dto.user.RegisterUserDto;
 import com.example.restaurantapi.model.User;
@@ -86,6 +87,40 @@ public class ValidationService {
             }
         } else {
             errList.add("Proszę podać dane restauracji");
+        }
+
+        return errList;
+    }
+
+    public List<String> menuValidation(CreateMenuDto dto) {
+        String name;
+        int creatorId;
+        int menuTypeId;
+        int restaurantId;
+
+        if (!ServiceFunction.isNull(dto)) {
+            if (!ServiceFunction.isNull(dto.getName())) {
+                name = dto.getName();
+            } else {
+                errList.add("Proszę podać nazwę menu");
+            }
+            if (!ServiceFunction.isNull(dto.getCreatorId())) {
+                creatorId = dto.getCreatorId();
+            } else {
+                errList.add("Proszę podać twórcę menu");
+            }
+            if (!ServiceFunction.isNull(dto.getMenuTypeId())) {
+                menuTypeId = dto.getMenuTypeId();
+            } else {
+                errList.add("Proszę podać rodzaj menu");
+            }
+            if (!ServiceFunction.isNull(dto.getRestaurantId())) {
+                restaurantId = dto.getRestaurantId();
+            } else {
+                errList.add("Proszę wybrać restauracje");
+            }
+        } else {
+            errList.add("Proszę uzupełnić dane");
         }
 
         return errList;

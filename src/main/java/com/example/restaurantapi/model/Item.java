@@ -39,7 +39,7 @@ public class Item {
     private Menu menu;
     //Type FK
     @ManyToOne
-    private ItemType employee;
+    private ItemType itemType;
     //Unit fk
     @ManyToOne
     @JoinColumn(name = "item_unit", nullable = false)

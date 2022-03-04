@@ -1,10 +1,14 @@
 package com.example.restaurantapi.model;
 
 import com.example.restaurantapi.dto.restaurant.AddRestaurantDto;
+import com.example.restaurantapi.dto.restaurant.InfoRestaurantDto;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -40,7 +44,24 @@ public class Restaurant {
 
     //Menu id FK
     @OneToMany(mappedBy = "restaurant_menu")
-    private Set<Menu> menus;
+    private List<Menu> menus;
+
+    @ManyToOne
+    private ItemType itemType;
+
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinTable(name = "restaurant_type_table",
+            joinColumns = @JoinColumn(name = "restaurant_id"),
+            inverseJoinColumns = @JoinColumn(name = "restaurant_type_id")
+    )
+    private List<RestaurantType> restaurantTypes;
+
+
+
+
 
 
     public static Restaurant of(AddRestaurantDto dto) {
@@ -56,5 +77,18 @@ public class Restaurant {
         return restaurant;
 
 
+    }
+
+    public static Restaurant of(InfoRestaurantDto dto) {
+        Restaurant restaurant = new Restaurant();
+
+        restaurant.setName(dto.getName());
+        restaurant.setPhoneNumber(dto.getPhoneNumber());
+        restaurant.setEmail(dto.getEmail());
+        restaurant.setCity(dto.getCity());
+        restaurant.setAddress(dto.getAddress());
+        restaurant.setVoivodeship(dto.getVoivodeship());
+
+        return restaurant;
     }
 }
