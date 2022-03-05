@@ -22,13 +22,8 @@ public class Menu {
     //FK restaurant
     @ManyToOne
     @JoinColumn(name = "restaurant_id", nullable = false)
-
     private Restaurant restaurant_menu;
-    //FK items<>
-    @OneToMany(cascade=CascadeType.ALL)
-    @JoinColumn(name="item_id")
 
-    private List<Item> items;
     //FK menu type
     @ManyToOne
     private MenuType menuType;

@@ -46,8 +46,9 @@ public class Restaurant {
     @OneToMany(mappedBy = "restaurant_menu")
     private List<Menu> menus;
 
-    @ManyToOne
-    private ItemType itemType;
+    @OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+    private List<Item> items;
 
     @ManyToMany(cascade = {
             CascadeType.PERSIST,

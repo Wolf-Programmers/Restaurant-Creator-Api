@@ -20,4 +20,13 @@ public class ItemType {
     @OneToMany(cascade=CascadeType.ALL)
     @JoinColumn(name="item_id")
     private List<Item> items;
+
+    public static ItemType itemTypeWithoutItems(ItemType itemType) {
+        ItemType dto = new ItemType();
+
+        dto.setId(itemType.getId());
+        dto.setName(itemType.getName());
+
+        return dto;
+    }
 }

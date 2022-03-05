@@ -1,6 +1,7 @@
 package com.example.restaurantapi.service;
 
 
+import com.example.restaurantapi.dto.item.CreateItemDto;
 import com.example.restaurantapi.dto.menu.CreateMenuDto;
 import com.example.restaurantapi.dto.restaurant.AddRestaurantDto;
 import com.example.restaurantapi.dto.user.RegisterUserDto;
@@ -92,6 +93,7 @@ public class ValidationService {
         return errList;
     }
 
+    //TODO sprawdzic czy podane menu juz nie istanieje dla restauracji
     public List<String> menuValidation(CreateMenuDto dto) {
         String name;
         int creatorId;
@@ -127,4 +129,37 @@ public class ValidationService {
     }
 
 
+    public List<String> itemValidation(CreateItemDto dto) {
+
+        Double quantity =0.0;
+        Double price = 0.0;
+
+        if (!ServiceFunction.isNull(dto)) {
+            if (ServiceFunction.isNull(dto.getTitle()))
+                errList.add("Proszę podać nazwę produktu");
+            if (ServiceFunction.isNull(dto.getDesc()))
+                errList.add("Proszę podać opis produktu");
+            if (ServiceFunction.isNull(dto.getQuantity())) {
+                errList.add("Proszę podać ilość produktu");
+            } else {
+                quantity = dto.getQuantity();
+                if (quantity <= 0.0)
+                    errList.add("Ilość produktu nie może być zerowa lub ujemna");
+            }
+            if (ServiceFunction.isNull(dto.getPrice())) {
+                errList.add("Proszę podać cenę produktu");
+            } else {
+                price = dto.getPrice();
+                if (price < 0.0)
+                    errList.add("Cena produktu nie może być ujemna");
+            }
+            if (ServiceFunction.isNull(dto.getItemType()))
+                errList.add("Proszę podać typ produktu");
+
+        } else {
+            errList.add("Proszę uzupełnić dane");
+        }
+
+        return errList;
+    }
 }

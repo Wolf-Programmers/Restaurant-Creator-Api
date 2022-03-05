@@ -27,7 +27,6 @@ public class MenuService {
     private final ItemRepository itemRepository;
     private final ItemTypeRepository itemTypeRepository;
     private final UserRepository userRepository;
-    private final UnitRepository unitRepository;
     private final ValidationService validationService;
     private List<String> validationResult = new ArrayList<>();
 
@@ -86,4 +85,6 @@ public class MenuService {
 
         return ret;
     }
+
+
 }

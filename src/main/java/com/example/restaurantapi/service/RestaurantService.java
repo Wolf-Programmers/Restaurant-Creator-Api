@@ -52,9 +52,7 @@ public class RestaurantService {
         ServiceReturn ret = new ServiceReturn();
         validationResult.clear();
 
-        /*
-        Check i
-         */
+
         Optional<User> optionalUser = userRepository.findById(addRestaurantDto.getOwner());
         if (optionalUser.isEmpty()) {
             ret.setStatus(-1);
@@ -71,6 +69,7 @@ public class RestaurantService {
 
             return ret;
         }
+
         //Prepare restaurant types
         for (int i = 0; i < addRestaurantDto.getRestaurantTypesList().size(); i++) {
             RestaurantType restaurantType = new RestaurantType();
@@ -92,6 +91,7 @@ public class RestaurantService {
         Restaurant createdRestaurant = restaurantRepository.save(restaurant);
 
         openingTimes = addRestaurantDto.getOpeningTimes();
+
         //Add opening hours to restaurant
         for (int i = 0; i < openingTimes.size(); i++) {
             OpeningPeriod openingPeriod = OpeningPeriod.of(openingTimes.get(i));
@@ -103,7 +103,7 @@ public class RestaurantService {
         CreatedRestaurantDto restaurantDto = CreatedRestaurantDto.of(createdRestaurant);
         restaurantDto.setOpeningTimes(openingTimes);
 
-        //Get restaurant types
+        //Get restaurant types to return
         List<RestaurantType> getCreatedRestaurantType = createdRestaurant.getRestaurantTypes();
         for (RestaurantType restaurantType : getCreatedRestaurantType) {
             RestaurantTypes type = RestaurantTypes.of(restaurantType);

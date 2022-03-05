@@ -1,5 +1,6 @@
 package com.example.restaurantapi.model;
 
+import com.example.restaurantapi.dto.item.CreateItemDto;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -22,7 +23,7 @@ public class Item {
     private double price;
 
     @Column(nullable = false)
-    private String describe;
+    private String item_describe;
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -31,8 +32,11 @@ public class Item {
     @UpdateTimestamp
     private Date updatedAt;
 
+    @Column(nullable = false)
+    private String unit;
 
-
+    @Column(nullable = false)
+    private Double quantity;
 
     //Menu FK
     @ManyToOne
@@ -40,8 +44,22 @@ public class Item {
     //Type FK
     @ManyToOne
     private ItemType itemType;
-    //Unit fk
-    @ManyToOne
-    @JoinColumn(name = "item_unit", nullable = false)
-    private Unit item_unit;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    private Restaurant restaurant;
+
+    public static Item of(CreateItemDto dto) {
+        Item item = new Item();
+
+        item.setTitle(dto.getTitle());
+        item.setItem_describe(dto.getDesc());
+        item.setQuantity(dto.getQuantity());
+        item.setPrice(dto.getPrice());
+        item.setUnit(dto.getUnit());
+
+        return item;
+
+    }
+
 }
