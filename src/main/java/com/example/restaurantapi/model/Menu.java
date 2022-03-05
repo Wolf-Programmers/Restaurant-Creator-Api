@@ -28,6 +28,16 @@ public class Menu {
     @ManyToOne
     private MenuType menuType;
 
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinTable(name = "menu_item_table",
+            joinColumns = @JoinColumn(name = "menu_id"),
+            inverseJoinColumns = @JoinColumn(name = "item_id")
+    )
+    private List<Item> menuItems;
+
     public static Menu of(CreateMenuDto createMenuDto) {
         Menu menu = new Menu();
 
@@ -35,5 +45,16 @@ public class Menu {
         menu.setMenuType(createMenuDto.getMenuType());
 
         return menu;
+    }
+
+    public static Menu of(Menu menu) {
+        Menu dto = new Menu();
+
+        dto.setName(menu.getName());
+        dto.setRestaurant_menu(menu.getRestaurant_menu());
+        dto.setMenuType(menu.getMenuType());
+        dto.setMenuItems(menu.getMenuItems());
+
+        return dto;
     }
 }

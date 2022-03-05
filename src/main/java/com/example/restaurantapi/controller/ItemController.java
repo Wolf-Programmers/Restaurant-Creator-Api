@@ -36,5 +36,12 @@ public class ItemController {
         return itemService.findItemByNameInRestaurant(itemName, restaurant);
     }
 
+    @GetMapping("/info-type")
+    public ServiceReturn getItemByTypeInRestaurant(@RequestParam("itemType") int itemType, @RequestParam("restaurantId") int restaurantId) {
+        Long typeId = Long.valueOf(itemType);
+        Long restaurant = Long.valueOf(restaurantId);
+        return itemService.findItemsByTypeInRestaurant(typeId, restaurant);
+    }
+
 
 }

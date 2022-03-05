@@ -1,13 +1,11 @@
 package com.example.restaurantapi.controller;
 
+import com.example.restaurantapi.dto.menu.AddItemToMenuDto;
 import com.example.restaurantapi.dto.menu.CreateMenuDto;
 import com.example.restaurantapi.service.MenuService;
 import com.example.restaurantapi.service.ServiceReturn;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @Author Szymon Królik
@@ -22,4 +20,19 @@ public class MenuController {
     public ServiceReturn createMenu(@RequestBody CreateMenuDto createMenuDto) {
         return menuService.createMenu(createMenuDto);
     }
+
+    @PostMapping("/add-item")
+    public ServiceReturn addItemToMenu(@RequestBody AddItemToMenuDto addItemToMenuDto) {
+
+        return menuService.addItemToMenu(addItemToMenuDto);
+    }
+
+    @GetMapping("/show")
+    public ServiceReturn showMenuById(@RequestParam("menuId") int menuId, @RequestParam("restaurantId") int restaurantId) {
+        Long menu = Long.valueOf(menuId);
+        Long restaurant = Long.valueOf(restaurantId);
+
+        return menuService.showMenuById(menu, restaurant);
+    }
+
 }

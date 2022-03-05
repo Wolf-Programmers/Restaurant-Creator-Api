@@ -1,11 +1,10 @@
 package com.example.restaurantapi.service;
 
+import com.example.restaurantapi.dto.menu.AddItemToMenuDto;
 import com.example.restaurantapi.dto.menu.CreateMenuDto;
 import com.example.restaurantapi.dto.menu.CreatedMenuDto;
-import com.example.restaurantapi.model.Menu;
-import com.example.restaurantapi.model.MenuType;
-import com.example.restaurantapi.model.Restaurant;
-import com.example.restaurantapi.model.User;
+import com.example.restaurantapi.dto.menu.MenuItemsDto;
+import com.example.restaurantapi.model.*;
 import com.example.restaurantapi.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,6 +29,12 @@ public class MenuService {
     private final ValidationService validationService;
     private List<String> validationResult = new ArrayList<>();
 
+    /**
+     * Create new menu for restaurant
+     * @author Szymon Królik
+     * @param createMenuDto
+     * @return
+     */
     public ServiceReturn createMenu(CreateMenuDto createMenuDto) {
         ServiceReturn ret = new ServiceReturn();
         validationResult.clear();
@@ -84,6 +89,76 @@ public class MenuService {
         ret.setValue(CreatedMenuDto.of(createdMenu));
 
         return ret;
+    }
+
+    /**
+     * Add new item to exist menu
+     * @author Szymon Królik
+     * @param addItemToMenuDto
+     * @return
+     */
+    public ServiceReturn addItemToMenu(AddItemToMenuDto addItemToMenuDto) {
+        ServiceReturn ret = new ServiceReturn();
+        Long restaurantId = Long.valueOf(addItemToMenuDto.getRestaurantId());
+        Long itemId = Long.valueOf(addItemToMenuDto.getItemId());
+        Long menuId = Long.valueOf(addItemToMenuDto.getMenuId());
+        List<Item> itemsList = new ArrayList<>();
+
+        //Find restaurant
+        Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(restaurantId);
+        if (optionalRestaurant.isEmpty()) {
+            ret.setMessage("NIe znaleziono takiej restauracji");
+            return ret;
+        }
+
+        //Find item
+        Optional<Item> optionalItem = itemRepository.findById(itemId);
+        if (optionalItem.isEmpty()) {
+            ret.setMessage("Nie znaleziono takiego przedmiotu");
+            return ret;
+        }
+
+        //Find menu
+        Optional<Menu> optionalMenu = menuRepository.findById(menuId);
+        if (optionalMenu.isEmpty()) {
+            ret.setMessage("Nie znaleziono takiego menu");
+            return ret;
+        }
+
+        Menu menu = optionalMenu.get();
+        itemsList = menu.getMenuItems();
+        itemsList.add(optionalItem.get());
+        menu.setMenuItems(itemsList);
+        Menu updatedMenu = menuRepository.save(menu);
+
+        MenuItemsDto retMenu = MenuItemsDto.of(updatedMenu);
+
+        ret.setValue(retMenu);
+        return ret;
+    }
+
+    public ServiceReturn showMenuById(Long menuId, Long restaurantId) {
+        ServiceReturn ret = new ServiceReturn();
+
+        //Find restaurant
+        Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(restaurantId);
+        if (optionalRestaurant.isEmpty()) {
+            ret.setMessage("NIe znaleziono takiej restauracji");
+            return ret;
+        }
+
+        //Find menu
+        Optional<Menu> optionalMenu = menuRepository.findById(menuId);
+        if (optionalMenu.isEmpty()) {
+            ret.setMessage("Nie znaleziono takiego menu");
+            return ret;
+        }
+
+        MenuItemsDto retMenu = MenuItemsDto.of(optionalMenu.get());
+
+        ret.setValue(retMenu);
+        return ret;
+
     }
 
 

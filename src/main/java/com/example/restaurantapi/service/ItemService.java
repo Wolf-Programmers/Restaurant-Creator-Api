@@ -33,6 +33,12 @@ public class ItemService {
 
     private List<String> validationResult = new ArrayList<>();
 
+    /**
+     * Create new item for restaurant
+     * @author Szymon Królik
+     * @param createItemDto
+     * @return
+     */
     public ServiceReturn createItem(CreateItemDto createItemDto) {
         ServiceReturn ret = new ServiceReturn();
         validationResult.clear();
@@ -74,8 +80,6 @@ public class ItemService {
         return ret;
 
     }
-
-
 
     /**
      * Find item by id in specific restaurant
@@ -151,6 +155,40 @@ public class ItemService {
         return ret;
     }
 
+    /**
+     * Find List<Item> by type in specific restsaurant
+     * @author Szymon Królik
+     * @param typeId
+     * @param restaurantId
+     * @return
+     */
+    public ServiceReturn findItemsByTypeInRestaurant(Long typeId, Long restaurantId) {
+        ServiceReturn ret = new ServiceReturn();
+        List<CreatedItemDto> itemsInfo = new ArrayList<>();
 
+        //Get restaurant
+        Optional<Restaurant> restaurantOptional = restaurantRepository.findById(restaurantId);
+        if (restaurantOptional.isEmpty()) {
+            ret.setMessage("Nie znaleziono takiej restauracji");
+            return ret;
+        }
+
+        //Get item by type
+        List<Item> itemsList = itemRepository.findByItemTypeId(typeId);
+        if (itemsList.size() == 0) {
+            ret.setMessage("Nie znaleziono żadnych posiłków");
+            return ret;
+        }
+        for (Item item : itemsList) {
+            if (restaurantId == item.getRestaurant().getId()) {
+                CreatedItemDto infoItem = CreatedItemDto.of(item);
+                itemsInfo.add(infoItem);
+            }
+        }
+
+        ret.setValue(itemsInfo);
+        return ret;
+
+    }
 
 }

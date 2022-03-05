@@ -7,6 +7,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Entity
@@ -39,8 +40,8 @@ public class Item {
     private Double quantity;
 
     //Menu FK
-    @ManyToOne
-    private Menu menu;
+    @ManyToMany(mappedBy = "menuItems")
+    private List<Menu> menus;
     //Type FK
     @ManyToOne
     private ItemType itemType;
