@@ -39,4 +39,5 @@ public class RestaurantController {
     public ServiceReturn getRestaurantByCity(@RequestParam("city") String city) {
         return restaurantService.getRestaurantsByCity(city);
     }
+
 }
