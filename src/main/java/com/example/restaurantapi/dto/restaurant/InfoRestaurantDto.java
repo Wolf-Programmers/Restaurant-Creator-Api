@@ -1,5 +1,6 @@
 package com.example.restaurantapi.dto.restaurant;
 
+import com.example.restaurantapi.biznesobject.MenuInformation;
 import com.example.restaurantapi.biznesobject.OpeningTimes;
 import com.example.restaurantapi.biznesobject.RestaurantTypes;
 import com.example.restaurantapi.model.Menu;
@@ -20,8 +21,8 @@ public class InfoRestaurantDto {
     private String phoneNumber;
     private String email;
     public String voivodeship;
-    private List<Menu> menus;
-    private List<OpeningPeriod> openingPeriod;
+    private List<MenuInformation> menus;
+    private List<OpeningTimes> openingPeriod;
     private List<RestaurantTypes> restaurantTypes;
 
     public static InfoRestaurantDto of (Restaurant restaurant) {
@@ -34,7 +35,7 @@ public class InfoRestaurantDto {
         dto.setPhoneNumber(restaurant.getPhoneNumber());
         dto.setEmail(restaurant.getEmail());
         dto.setVoivodeship(restaurant.getVoivodeship());
-        dto.setMenus(restaurant.getMenus());
+
 
         return dto;
     }

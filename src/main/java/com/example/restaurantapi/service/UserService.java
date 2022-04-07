@@ -9,6 +9,7 @@ import com.example.restaurantapi.model.User;
 import com.example.restaurantapi.repository.ConfirmationTokenRepository;
 import com.example.restaurantapi.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,6 +17,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.sql.rowset.serial.SerialClob;
 import javax.swing.text.html.Option;
 import java.util.ArrayList;
@@ -29,6 +32,8 @@ import java.util.Optional;
 @AllArgsConstructor
 public class UserService implements UserDetailsService {
 
+
+
     private final UserRepository userRepository;
     private final ValidationService validationService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -36,6 +41,7 @@ public class UserService implements UserDetailsService {
     private final ConfirmationTokenRepository confirmationTokenRepository;
     private final EmailService emailService;
     private List<String> validationResult = new ArrayList<>();
+
 
     /**
      * Save user in database

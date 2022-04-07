@@ -3,6 +3,7 @@ package com.example.restaurantapi.service;
 
 import com.example.restaurantapi.dto.item.CreateItemDto;
 import com.example.restaurantapi.dto.menu.CreateMenuDto;
+import com.example.restaurantapi.dto.restaurant.AddEmployeeDto;
 import com.example.restaurantapi.dto.restaurant.AddRestaurantDto;
 import com.example.restaurantapi.dto.user.RegisterUserDto;
 import com.example.restaurantapi.model.User;
@@ -158,6 +159,49 @@ public class ValidationService {
 
         } else {
             errList.add("Proszę uzupełnić dane");
+        }
+
+        return errList;
+    }
+
+    public List<String> addEmployeeValidation(AddEmployeeDto dto) {
+        if (!ServiceFunction.isNull(dto)) {
+            if (ServiceFunction.isNull(dto.getRestaurantId()))
+                errList.add("Proszę podać restauracje");
+
+            if (ServiceFunction.isNull(dto.getLastName()))
+                errList.add("Proszę podać nazwisko pracowanika");
+
+            if (ServiceFunction.isNull(dto.getName()))
+                errList.add("Proszę podać imie pracownika");
+
+            if (ServiceFunction.isNull(dto.getEmail())) {
+                errList.add("Proszę podać email pracownika");
+            } else {
+                if (!ServiceFunction.validEmail(dto.getEmail()))
+                    errList.add("Proszę podać poprawny email pracownika");
+            }
+
+            if (ServiceFunction.isNull(dto.getPassword()))
+                errList.add("Proszę podać hasło dla pracownika");
+
+            if (ServiceFunction.isNull(dto.getPhoneNumber())) {
+                errList.add("Proszę podać numer telefonu pracownika");
+            } else {
+                if (!ServiceFunction.validPhoneNumber(dto.getPhoneNumber()))
+                    errList.add("Proszę podać poprawny numer telefonu pracownika");
+            }
+
+            if (ServiceFunction.isNull(dto.getSalary())) {
+                errList.add("Proszę podać wynagrodzenia pracownika");
+            } else {
+                if (dto.getSalary() <= 0.0)
+                    errList.add("Proszę podać poprawne wynagrodzenie");
+            }
+
+
+        } else {
+            errList.add("Obiekt nie może być nullem");
         }
 
         return errList;

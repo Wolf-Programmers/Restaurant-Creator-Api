@@ -30,7 +30,7 @@ public class ServiceFunction {
     }
 
     public static boolean isNull(Object value) {
-        if (value.equals(null)) {
+        if (value == null) {
             return true;
         }
 
@@ -61,9 +61,6 @@ public class ServiceFunction {
     public static void clear(List<String> var) {
         var.clear();
     }
-
-
-
 
     public static boolean enableUser(User user) {
         return user.isEnabled();

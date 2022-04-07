@@ -1,19 +1,16 @@
 package com.example.restaurantapi.service;
 
+import com.example.restaurantapi.biznesobject.MenuInformation;
 import com.example.restaurantapi.biznesobject.OpeningTimes;
 import com.example.restaurantapi.biznesobject.RestaurantTypes;
+import com.example.restaurantapi.dto.restaurant.AddEmployeeDto;
 import com.example.restaurantapi.dto.restaurant.AddRestaurantDto;
 import com.example.restaurantapi.dto.restaurant.CreatedRestaurantDto;
 import com.example.restaurantapi.dto.restaurant.InfoRestaurantDto;
-import com.example.restaurantapi.model.OpeningPeriod;
-import com.example.restaurantapi.model.Restaurant;
-import com.example.restaurantapi.model.RestaurantType;
-import com.example.restaurantapi.model.User;
-import com.example.restaurantapi.repository.OpeningPeriodRepository;
-import com.example.restaurantapi.repository.RestaurantRepository;
-import com.example.restaurantapi.repository.RestaurantTypeRepository;
-import com.example.restaurantapi.repository.UserRepository;
+import com.example.restaurantapi.model.*;
+import com.example.restaurantapi.repository.*;
 import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
@@ -33,6 +30,8 @@ public class RestaurantService {
     private final RestaurantRepository restaurantRepository;
     private final OpeningPeriodRepository openingPeriodRepository;
     private final RestaurantTypeRepository restaurantTypeRepository;
+    private final ItemRepository itemRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ValidationService validationService;
     private final EmailService emailService;
     private List<String> validationResult = new ArrayList<>();
@@ -130,6 +129,8 @@ public class RestaurantService {
         ServiceReturn ret = new ServiceReturn();
         validationResult.clear();
         List<RestaurantTypes> restaurantTypesList = new ArrayList<>();
+        List<OpeningTimes> openingTimesList = new ArrayList<>();
+        List<MenuInformation> menuInformationList =  new ArrayList<>();
 
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(id);
         if (optionalRestaurant.isEmpty()) {
@@ -139,13 +140,23 @@ public class RestaurantService {
         }
 
         InfoRestaurantDto infoRestaurantDto = InfoRestaurantDto.of(optionalRestaurant.get());
+        //get menu list
+        List<Menu> menus = optionalRestaurant.get().getMenus();
+        for (Menu menu : menus) {
+            MenuInformation menuInformation = MenuInformation.of(menu);
+            menuInformationList.add(menuInformation);
+        }
+        infoRestaurantDto.setMenus(menuInformationList);
+
         //Get opening hours
         List<OpeningPeriod> openingPeriodList = openingPeriodRepository.findByRestaurant(optionalRestaurant.get());
         if (openingPeriodList.size() > 0) {
-            List<OpeningPeriod> openingPeriods = openingPeriodList.stream()//lista na strumien
-                    .map(OpeningPeriod::ofOpeningPeriod)//wylowyane na kazdym obiekcie listy funkcje 'OF'
-                    .collect(Collectors.toList());//zbieranie kazdego wyniku
-            infoRestaurantDto.setOpeningPeriod(openingPeriods);
+            for (OpeningPeriod openingPeriods : openingPeriodList) {
+                OpeningTimes openingTimes = OpeningTimes.of(openingPeriods);
+                openingTimesList.add(openingTimes);
+
+            }
+            infoRestaurantDto.setOpeningPeriod(openingTimesList);
         }
 
         //Get restaurant types
@@ -182,25 +193,37 @@ public class RestaurantService {
             ret.setMessage("Nie znaleziono takiej restauracji");
             return ret;
         }
-        for (Restaurant restaurant : optionalRestaurant) {
-            List<RestaurantTypes> restaurantTypesList = new ArrayList<>();
+       for (Restaurant res : optionalRestaurant) {
+           InfoRestaurantDto dto = InfoRestaurantDto.of(res);
+           List<MenuInformation> menuInformationList = new ArrayList<>();
+           List<OpeningTimes> openingTimesList = new ArrayList<>();
+           List<RestaurantTypes> restaurantTypesList = new ArrayList<>();
+           //Get menu list
+           List<Menu> menus = res.getMenus();
+           for (Menu menu: menus) {
+               MenuInformation menuInformation = MenuInformation.of(menu);
+               menuInformationList.add(menuInformation);
+           }
+           dto.setMenus(menuInformationList);
 
-            InfoRestaurantDto infoRestaurantDto = InfoRestaurantDto.of(restaurant);
-            List<OpeningPeriod> openingPeriods = openingPeriodRepository.findByRestaurant(restaurant);
-            if (openingPeriods.size() > 0)
-                infoRestaurantDto.setOpeningPeriod(openingPeriods);
+           List<OpeningPeriod> openingPeriodList = openingPeriodRepository.findByRestaurant(res);
+           if (openingPeriodList.size() > 0) {
+               for (OpeningPeriod openingPeriod : openingPeriodList) {
+                   OpeningTimes openingTimes = OpeningTimes.of(openingPeriod);
+                   openingTimesList.add(openingTimes);
+               }
+               dto.setOpeningPeriod(openingTimesList);
+           }
 
+           List<RestaurantType> getRestaurantTypeList = res.getRestaurantTypes();
+           for (RestaurantType type : getRestaurantTypeList) {
+               RestaurantTypes restaurantTypes = RestaurantTypes.of(type);
+               restaurantTypesList.add(restaurantTypes);
+           }
+           dto.setRestaurantTypes(restaurantTypesList);
 
-            //Add restaurant types
-            List<RestaurantType> getRestaurantTypeList = restaurant.getRestaurantTypes();
-            for (RestaurantType type : getRestaurantTypeList) {
-                RestaurantTypes restaurantTypes = RestaurantTypes.of(type);
-                restaurantTypesList.add(restaurantTypes);
-            }
-
-            infoRestaurantDto.setRestaurantTypes(restaurantTypesList);
-            infoRestaurantDtoList.add(infoRestaurantDto);
-        }
+           infoRestaurantDtoList.add(dto);
+       }
 
         ret.setStatus(1);
         ret.setValue(infoRestaurantDtoList);
@@ -218,32 +241,42 @@ public class RestaurantService {
         ServiceReturn ret = new ServiceReturn();
         List<InfoRestaurantDto> infoRestaurantDtoList = new ArrayList<>();
 
-
         List<Restaurant> optionalRestaurant = restaurantRepository.findByCity(city);
         if (optionalRestaurant.size() == 0) {
             ret.setStatus(0);
             ret.setMessage("Nie znaleziono restauracji w podanym mieście");
             return ret;
         }
-        for (Restaurant restaurant : optionalRestaurant) {
+        for (Restaurant res : optionalRestaurant) {
+            InfoRestaurantDto dto = InfoRestaurantDto.of(res);
+            List<MenuInformation> menuInformationList = new ArrayList<>();
+            List<OpeningTimes> openingTimesList = new ArrayList<>();
             List<RestaurantTypes> restaurantTypesList = new ArrayList<>();
+            //Get menu list
+            List<Menu> menus = res.getMenus();
+            for (Menu menu: menus) {
+                MenuInformation menuInformation = MenuInformation.of(menu);
+                menuInformationList.add(menuInformation);
+            }
+            dto.setMenus(menuInformationList);
 
-            InfoRestaurantDto infoRestaurantDto = InfoRestaurantDto.of(restaurant);
-            List<OpeningPeriod> openingPeriods = openingPeriodRepository.findByRestaurant(restaurant);
-            infoRestaurantDto.setOpeningPeriod(openingPeriods);
+            List<OpeningPeriod> openingPeriodList = openingPeriodRepository.findByRestaurant(res);
+            if (openingPeriodList.size() > 0) {
+                for (OpeningPeriod openingPeriod : openingPeriodList) {
+                    OpeningTimes openingTimes = OpeningTimes.of(openingPeriod);
+                    openingTimesList.add(openingTimes);
+                }
+                dto.setOpeningPeriod(openingTimesList);
+            }
 
-
-            //Add restaurant types
-            List<RestaurantType> getRestaurantTypeList = restaurant.getRestaurantTypes();
+            List<RestaurantType> getRestaurantTypeList = res.getRestaurantTypes();
             for (RestaurantType type : getRestaurantTypeList) {
                 RestaurantTypes restaurantTypes = RestaurantTypes.of(type);
                 restaurantTypesList.add(restaurantTypes);
             }
+            dto.setRestaurantTypes(restaurantTypesList);
 
-            infoRestaurantDto.setRestaurantTypes(restaurantTypesList);
-            infoRestaurantDtoList.add(infoRestaurantDto);
-
-
+            infoRestaurantDtoList.add(dto);
         }
 
         ret.setStatus(1);
@@ -251,6 +284,9 @@ public class RestaurantService {
         return ret;
 
     }
+
+
+
 
 
 

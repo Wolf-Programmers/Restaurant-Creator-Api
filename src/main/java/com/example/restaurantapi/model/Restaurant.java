@@ -50,6 +50,9 @@ public class Restaurant {
             cascade = CascadeType.ALL)
     private List<Item> items;
 
+    @OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Employee> employees;
+
     @ManyToMany(cascade = {
             CascadeType.PERSIST,
             CascadeType.MERGE
@@ -59,11 +62,6 @@ public class Restaurant {
             inverseJoinColumns = @JoinColumn(name = "restaurant_type_id")
     )
     private List<RestaurantType> restaurantTypes;
-
-
-
-
-
 
     public static Restaurant of(AddRestaurantDto dto) {
         Restaurant restaurant = new Restaurant();
