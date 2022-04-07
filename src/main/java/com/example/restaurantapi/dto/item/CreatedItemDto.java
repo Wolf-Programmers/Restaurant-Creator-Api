@@ -10,9 +10,9 @@ public class CreatedItemDto {
     public Double quantity;
     public Double price;
     public String unit;
-    public Long restaurantId;
+    public int restaurantId;
     public String restaurantName;
-    public Long itemType;
+    public int itemType;
     public String itemTypeName;
 
     public static CreatedItemDto of(Item item) {

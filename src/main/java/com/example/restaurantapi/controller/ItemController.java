@@ -24,24 +24,22 @@ public class ItemController {
 
     @GetMapping("/info")
     public ServiceReturn getItemByIdInRestaurant(@RequestParam("itemId") int itemId, @RequestParam("restaurantId") int restaurantId ) {
-       Long item = Long.valueOf(itemId);
-       Long restaurant = Long.valueOf(restaurantId);
 
-       return itemService.findItemByIdInRestaurant(item, restaurant);
+
+       return itemService.findItemByIdInRestaurant(itemId, restaurantId);
     }
 
     @GetMapping("/info-name")
     public ServiceReturn getItemByNameInRestaurant(@RequestParam("itemName") String itemName, @RequestParam("restaurantId") int restaurantId) {
-        Long restaurant = Long.valueOf(restaurantId);
 
-        return itemService.findItemByNameInRestaurant(itemName, restaurant);
+
+        return itemService.findItemByNameInRestaurant(itemName, restaurantId);
     }
 
     @GetMapping("/info-type")
     public ServiceReturn getItemByTypeInRestaurant(@RequestParam("itemType") int itemType, @RequestParam("restaurantId") int restaurantId) {
-        Long typeId = Long.valueOf(itemType);
-        Long restaurant = Long.valueOf(restaurantId);
-        return itemService.findItemsByTypeInRestaurant(typeId, restaurant);
+
+        return itemService.findItemsByTypeInRestaurant(itemType, restaurantId);
     }
 
 

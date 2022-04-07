@@ -29,10 +29,8 @@ public class MenuController {
 
     @GetMapping("/show")
     public ServiceReturn showMenuById(@RequestParam("menuId") int menuId, @RequestParam("restaurantId") int restaurantId) {
-        Long menu = Long.valueOf(menuId);
-        Long restaurant = Long.valueOf(restaurantId);
 
-        return menuService.showMenuById(menu, restaurant);
+        return menuService.showMenuById(menuId, restaurantId);
     }
 
 

@@ -55,8 +55,7 @@ public class ItemService {
         Item item = Item.of(createItemDto);
 
         //get restaurant
-        Long restaurantId = Long.valueOf(createItemDto.getRestaurantId());
-        Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(restaurantId);
+        Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(createItemDto.getRestaurantId());
         if (optionalRestaurant.isEmpty()) {
             ret.setStatus(0);
             ret.setMessage("Nie znaleziono takiej restauracji");
@@ -64,7 +63,7 @@ public class ItemService {
         }
         item.setRestaurant(optionalRestaurant.get());
         //Get itemType
-        Optional<ItemType> optionalItemType = itemTypeRepository.findById(Long.valueOf(createItemDto.getItemType()));
+        Optional<ItemType> optionalItemType = itemTypeRepository.findById(createItemDto.getItemType());
         if (optionalItemType.isEmpty()) {
             ret.setMessage("Nie znaleziono takiego rodzaju posiałku");
             ret.setValue(0);
@@ -88,7 +87,7 @@ public class ItemService {
      * @param restaurantId
      * @return
      */
-    public ServiceReturn findItemByIdInRestaurant(Long itemId, Long restaurantId) {
+    public ServiceReturn findItemByIdInRestaurant(int itemId, int restaurantId) {
         ServiceReturn ret = new ServiceReturn();
 
         //Find restaurant
@@ -119,7 +118,7 @@ public class ItemService {
      * @param restaurantId
      * @return
      */
-    public ServiceReturn findItemByNameInRestaurant(String itemName, Long restaurantId) {
+    public ServiceReturn findItemByNameInRestaurant(String itemName, int restaurantId) {
         ServiceReturn ret = new ServiceReturn();
         List<CreatedItemDto> infoItemList = new ArrayList<>();
 
@@ -162,7 +161,7 @@ public class ItemService {
      * @param restaurantId
      * @return
      */
-    public ServiceReturn findItemsByTypeInRestaurant(Long typeId, Long restaurantId) {
+    public ServiceReturn findItemsByTypeInRestaurant(int typeId, int restaurantId) {
         ServiceReturn ret = new ServiceReturn();
         List<CreatedItemDto> itemsInfo = new ArrayList<>();
 

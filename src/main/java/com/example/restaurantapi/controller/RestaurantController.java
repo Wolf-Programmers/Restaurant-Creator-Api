@@ -27,8 +27,8 @@ public class RestaurantController {
 
     @GetMapping("/info")
     public ServiceReturn getRestaurant(@RequestParam("id") int id) {
-        Long longId =Long.valueOf(id);
-        return restaurantService.getRestaurant(longId);
+
+        return restaurantService.getRestaurant(id);
     }
 
     @GetMapping("/info-name")

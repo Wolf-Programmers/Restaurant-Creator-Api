@@ -17,7 +17,7 @@ import java.text.ParseException;
 public class OpeningPeriod {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private int id;
 
     @Column(nullable = false)
     private int weekDay;

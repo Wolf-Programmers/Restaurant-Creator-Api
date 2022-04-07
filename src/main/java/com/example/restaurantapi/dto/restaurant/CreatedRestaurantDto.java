@@ -10,7 +10,7 @@ import java.util.List;
 
 @Data
 public class CreatedRestaurantDto {
-    private Long id;
+    private int id;
     private String ownerName;
     private String name;
     private String city;

@@ -72,8 +72,8 @@ public class RestaurantService {
         //Prepare restaurant types
         for (int i = 0; i < addRestaurantDto.getRestaurantTypesList().size(); i++) {
             RestaurantType restaurantType = new RestaurantType();
-            Long typeId = Long.valueOf(addRestaurantDto.getRestaurantTypesList().get(i).getId());
-            Optional<RestaurantType> restaurantTypeOptional = restaurantTypeRepository.findById(typeId);
+
+            Optional<RestaurantType> restaurantTypeOptional = restaurantTypeRepository.findById(addRestaurantDto.getRestaurantTypesList().get(i).getId());
             if (restaurantTypeOptional.isEmpty()) {
                 ret.setStatus(0);
                 ret.setMessage("Nie znaleziono takiego typu restauracji");
@@ -125,7 +125,7 @@ public class RestaurantService {
      * @param id
      * @return InfoRestaurantDto
      */
-    public ServiceReturn getRestaurant(Long id) {
+    public ServiceReturn getRestaurant(int id) {
         ServiceReturn ret = new ServiceReturn();
         validationResult.clear();
         List<RestaurantTypes> restaurantTypesList = new ArrayList<>();

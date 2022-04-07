@@ -14,18 +14,19 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.*;
 
 @Data
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class User implements UserDetails, Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private int id;
 
     @Column(nullable = false)
     private String name;

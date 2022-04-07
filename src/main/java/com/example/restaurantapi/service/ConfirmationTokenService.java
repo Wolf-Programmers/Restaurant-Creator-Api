@@ -18,7 +18,7 @@ public class ConfirmationTokenService {
         confirmationTokenRepository.save(confirmationToken);
     }
 
-    public void deleteConfirmationToken(Long confirmationToken) {
+    public void deleteConfirmationToken(int confirmationToken) {
         confirmationTokenRepository.deleteById(confirmationToken);
     }
 
@@ -26,7 +26,7 @@ public class ConfirmationTokenService {
         confirmationTokenRepository.save(forgotPasswordToken);
     }
 
-    public void deleteForgotPasswordToken(Long forgotPasswordToken) {
+    public void deleteForgotPasswordToken(int forgotPasswordToken) {
         confirmationTokenRepository.deleteById(forgotPasswordToken);
     }
 }

@@ -17,7 +17,7 @@ import java.util.Set;
 public class Restaurant {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private int id;
 
     @Column(nullable = false)
     private String name;
@@ -38,7 +38,7 @@ public class Restaurant {
     @Column(nullable = false)
     private String voivodeship;
     //User id FK
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user_id;
 

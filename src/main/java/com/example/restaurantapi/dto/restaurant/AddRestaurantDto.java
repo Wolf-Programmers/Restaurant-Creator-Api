@@ -17,7 +17,7 @@ import java.util.List;
  */
 @Data
 public class AddRestaurantDto {
-    private Long owner;
+    private int owner;
     private String name;
     private String city;
     private String address;

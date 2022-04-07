@@ -14,7 +14,7 @@ import java.util.List;
 public class RestaurantType {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private int id;
 
     @Column(nullable = false)
     private String name;

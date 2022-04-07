@@ -15,7 +15,7 @@ import java.util.UUID;
 public class ConfirmationToken {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private int id;
 
     @Column
     private String confirmationToken;
@@ -24,7 +24,7 @@ public class ConfirmationToken {
     @Column(updatable = false)
     private Date createdAt;
 
-    @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
+    @OneToOne(targetEntity = User.class, fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "user_id")
     private User user;
 

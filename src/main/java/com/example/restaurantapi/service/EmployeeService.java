@@ -37,8 +37,8 @@ public class EmployeeService {
             ret.setErrorList(validationResult);
             return ret;
         }
-        Long restaurantId = Long.valueOf(dto.getRestaurantId());
-        Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(restaurantId);
+
+        Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(dto.getRestaurantId());
         if (optionalRestaurant.isEmpty()) {
             ret.setMessage("Nie znaleziono takiej restauracji");
             ret.setValue(dto);

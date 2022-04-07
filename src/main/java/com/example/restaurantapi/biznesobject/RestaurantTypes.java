@@ -11,7 +11,7 @@ public class RestaurantTypes {
     public static RestaurantTypes of(RestaurantType restaurantType) {
         RestaurantTypes dto = new RestaurantTypes();
 
-        dto.setId(restaurantType.getId().intValue());
+        dto.setId(restaurantType.getId());
         dto.setName(restaurantType.getName());
 
         return dto;
