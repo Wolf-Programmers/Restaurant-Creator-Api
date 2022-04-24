@@ -55,7 +55,7 @@ public class ItemService {
         Item item = Item.of(createItemDto);
 
         //get restaurant
-        Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(createItemDto.getRestaurantId());
+        Optional<Restaurant> optionalRestaurant = restaurantRepository.findById((createItemDto.getRestaurantId().intValue()));
         if (optionalRestaurant.isEmpty()) {
             ret.setStatus(0);
             ret.setMessage("Nie znaleziono takiej restauracji");
