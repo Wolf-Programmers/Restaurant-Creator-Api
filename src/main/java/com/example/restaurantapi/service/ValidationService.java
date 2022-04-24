@@ -1,6 +1,7 @@
 package com.example.restaurantapi.service;
 
 
+import com.example.restaurantapi.dto.cupon.CreateCuponDto;
 import com.example.restaurantapi.dto.item.CreateItemDto;
 import com.example.restaurantapi.dto.menu.CreateMenuDto;
 import com.example.restaurantapi.dto.restaurant.AddEmployeeDto;
@@ -199,6 +200,23 @@ public class ValidationService {
                     errList.add("Proszę podać poprawne wynagrodzenie");
             }
 
+
+        } else {
+            errList.add("Obiekt nie może być nullem");
+        }
+
+        return errList;
+    }
+    public List<String> addCuponValidation(CreateCuponDto dto) {
+        if (!ServiceFunction.isNull(dto)) {
+            if (ServiceFunction.isNull(dto.getRestaurant()))
+                errList.add("Proszę podać restauracje");
+
+            if (ServiceFunction.isNull(dto.getCuponCode()))
+                errList.add("Proszę podać lub wygenerowac kod kuponu.");
+
+            if (ServiceFunction.isNull(dto.getMaxUse()))
+                errList.add("Proszę podać maksymalna liczbę użyć.");
 
         } else {
             errList.add("Obiekt nie może być nullem");
