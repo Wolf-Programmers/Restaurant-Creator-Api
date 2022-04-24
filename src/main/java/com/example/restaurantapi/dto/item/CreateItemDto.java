@@ -10,7 +10,7 @@ public class CreateItemDto {
     public Double quantity;
     public Double price;
     public String unit;
-    public int restaurantId;
+    public Long restaurantId;
     public String restaurantName;
     public int itemType;
     public String itemTypeName;
