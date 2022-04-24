@@ -1,8 +1,13 @@
 package com.example.restaurantapi.controller;
 
+import com.example.restaurantapi.dto.cupon.CreateCuponDto;
+import com.example.restaurantapi.dto.restaurant.AddEmployeeDto;
+import com.example.restaurantapi.dto.user.RegisterUserDto;
+import com.example.restaurantapi.service.CuponService;
+import com.example.restaurantapi.service.ServiceReturn;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 /**
  * @Author Daniel Lezniak
  */
@@ -11,5 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class CuponController {
+    private final CuponService cuponService;
+
+    @PostMapping("/cupon-create")
+    public ServiceReturn createCupon(@RequestBody CreateCuponDto dto) {
+        ServiceReturn ret = cuponService.createCupon(dto);
+
+        return ret;
+    }
 
 }
