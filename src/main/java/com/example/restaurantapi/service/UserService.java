@@ -69,7 +69,7 @@ public class UserService implements UserDetailsService {
                 final ConfirmationToken confirmationToken = new ConfirmationToken(createdUser);
                 confirmationTokenService.saveConfirmationToken(confirmationToken);
 
-                sendConfirmationToken(user.getEmail(), confirmationToken.getConfirmationToken());
+//                sendConfirmationToken(user.getEmail(), confirmationToken.getConfirmationToken());
 
                 ret.setStatus(1);
                 ret.setErrorList(null);
@@ -130,11 +130,11 @@ public class UserService implements UserDetailsService {
 
         userOptional =(Optional<User>) userExist[1];
         User user = userOptional.get();
-        if (!ServiceFunction.enableUser(user)) {
-            ret.setStatus(0);
-            ret.setMessage("Proszę najpierw aktywować swoje konto");
-            return ret;
-        }
+//        if (!ServiceFunction.enableUser(user)) {
+//            ret.setStatus(0);
+//            ret.setMessage("Proszę najpierw aktywować swoje konto");
+//            return ret;
+//        }
 
         if (bCryptPasswordEncoder.matches(password,user.getPassword())) {
             LoggeduserDto dto = LoggeduserDto.of(user);
