@@ -78,7 +78,8 @@ public class UserService implements UserDetailsService {
         } else {
 
             ret.setStatus(-1);
-            ret.setMessage("Taki użytkownik już istnieje");
+            validationResult.add("Email został już wykorzystany");
+            ret.setErrorList(validationResult);
             return ret;
         }
 
