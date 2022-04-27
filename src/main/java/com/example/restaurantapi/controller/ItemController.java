@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/item")
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin
 public class ItemController {
 
     private final ItemService itemService;

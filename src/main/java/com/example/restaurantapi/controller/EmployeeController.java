@@ -4,10 +4,7 @@ import com.example.restaurantapi.dto.restaurant.AddEmployeeDto;
 import com.example.restaurantapi.service.EmployeeService;
 import com.example.restaurantapi.service.ServiceReturn;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @Author Szymon Królik
@@ -15,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/employee")
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin
 public class EmployeeController {
 
     private final EmployeeService employeeService;

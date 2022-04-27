@@ -16,6 +16,7 @@ import java.text.ParseException;
 @RequestMapping("/restaurant")
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin
 public class RestaurantController {
 
     private final RestaurantService restaurantService;

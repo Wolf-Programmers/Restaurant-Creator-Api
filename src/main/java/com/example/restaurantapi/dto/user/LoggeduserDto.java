@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 public class LoggeduserDto {
+    public int id;
     public String name;
     public String email;
     public String phoneNumber;
@@ -12,6 +13,7 @@ public class LoggeduserDto {
     public static LoggeduserDto of (User user) {
         LoggeduserDto dto = new LoggeduserDto();
 
+        dto.setId(user.getId());
         dto.setName(user.getName());
         dto.setEmail(user.getEmail());
         dto.setPhoneNumber(user.getPhoneNumber());

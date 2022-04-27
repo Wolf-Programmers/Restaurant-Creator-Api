@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/menu")
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin
 public class MenuController {
 
     private final MenuService menuService;

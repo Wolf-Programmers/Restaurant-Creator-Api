@@ -30,4 +30,7 @@ public class Cupon {
         cupon.setRestaurant(dto.getRestaurant());
         return cupon;
     }
+    String elo = "czesc";
+
+
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/cupon")
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin
 public class CuponController {
     private final CuponService cuponService;
 
