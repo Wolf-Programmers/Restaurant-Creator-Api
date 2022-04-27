@@ -21,9 +21,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.sql.rowset.serial.SerialClob;
 import javax.swing.text.html.Option;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @Author Szymon Królik
@@ -40,7 +38,7 @@ public class UserService implements UserDetailsService {
     private final ConfirmationTokenService confirmationTokenService;
     private final ConfirmationTokenRepository confirmationTokenRepository;
     private final EmailService emailService;
-    private List<String> validationResult = new ArrayList<>();
+    private Map<String, String> validationResult = new HashMap<String, String>();
 
 
     /**
@@ -78,7 +76,7 @@ public class UserService implements UserDetailsService {
         } else {
 
             ret.setStatus(-1);
-            validationResult.add("Email został już wykorzystany");
+            validationResult.put("email", "Email został już wykorzystany");
             ret.setErrorList(validationResult);
             return ret;
         }
@@ -104,14 +102,16 @@ public class UserService implements UserDetailsService {
             password = loginUserDto.getPassword();
         } else {
             ret.setStatus(0);
-            validationResult.add("Proszę uzupełnić hasło");
+            validationResult.put("password", "Proszę uzupełnić hasło");
+
         }
 
         if (!ServiceFunction.isNull(loginUserDto.getLogin())) {
             login = loginUserDto.getLogin();
         } else {
             ret.setStatus(0);
-            validationResult.add("Proszę uzupełnić login");
+            validationResult.put("login", "Proszę uzupełnić login");
+
         }
 
         if (validationResult.size() > 0) {
@@ -125,7 +125,7 @@ public class UserService implements UserDetailsService {
         Object[] userExist = userExist(loginUserDto);
         if (!(Boolean)userExist[0]) {
             ret.setStatus(0);
-            ret.setMessage("Nie znaleziono takiego użytkownika");
+            validationResult.put("error", "Nie znaleziono takiego użytkownika");
             return ret;
         }
 
@@ -146,7 +146,7 @@ public class UserService implements UserDetailsService {
             ret.setStatus(0);
             loginUserDto.setPassword(null);
             ret.setValue(loginUserDto);
-            ret.setMessage("Proszę wprowadzić poprawne hasło");
+            validationResult.put("password", "Proszę wprowadzić poprawne hasło");
         }
 
 
@@ -194,14 +194,15 @@ public class UserService implements UserDetailsService {
             userEmail = email;
         } else {
             ret.setStatus(-1);
-            ret.setMessage("Proszę wprowadzić email");
+            validationResult.put("email", "Proszę wprowadzić email");
             return ret;
         }
 
         Optional<User> optionalUser = userRepository.findByEmail(userEmail);
         if (optionalUser.isEmpty()) {
             ret.setStatus(-1);
-            ret.setMessage("Nie znaleziono użytkownika o podanym email");
+            validationResult.put("error", "Nie znaleziono użytkownika o podanym email");
+
             return ret;
         }
 
@@ -293,13 +294,15 @@ public class UserService implements UserDetailsService {
         String newPassword = "";
         if (ServiceFunction.isNull(password)) {
             ret.setStatus(-1);
-            ret.setMessage("Proszę podać hasło");
+            validationResult.put("password","Proszę podać hasło");
+
         }
 
         Optional<ConfirmationToken> confirmationTokenOptional = confirmationTokenRepository.findConfirmationTokenByConfirmationToken(token);
         if (confirmationTokenOptional.isEmpty()) {
             ret.setStatus(-1);
-            ret.setMessage("nie znaleziono takiego tokenu");
+            validationResult.put("token","nie znaleziono takiego tokenu");
+
             return ret;
         }
 

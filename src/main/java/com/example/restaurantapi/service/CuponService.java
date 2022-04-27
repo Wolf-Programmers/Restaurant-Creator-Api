@@ -9,15 +9,13 @@ import com.example.restaurantapi.repository.CuponRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
 public class CuponService  {
     private final CuponRepository cuponRepository;
-    private List<String> validationResult = new ArrayList<>();
+    private Map<String,String> validationResult = new HashMap<String, String>();
     private final ValidationService validationService;
 
     public ServiceReturn createCupon(CreateCuponDto createCuponDto) {

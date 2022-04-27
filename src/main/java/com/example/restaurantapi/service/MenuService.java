@@ -9,9 +9,7 @@ import com.example.restaurantapi.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @Author Szymon Królik
@@ -27,7 +25,7 @@ public class MenuService {
     private final ItemTypeRepository itemTypeRepository;
     private final UserRepository userRepository;
     private final ValidationService validationService;
-    private List<String> validationResult = new ArrayList<>();
+    private Map<String, String> validationResult = new HashMap<String, String>();
 
     /**
      * Create new menu for restaurant

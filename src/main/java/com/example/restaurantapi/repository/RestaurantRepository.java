@@ -10,6 +10,8 @@ import java.util.Optional;
 public interface RestaurantRepository extends JpaRepository<Restaurant, Integer> {
     List<Restaurant> findByNameContaining(String name);
     List<Restaurant> findByCity(String city);
+    Optional<Restaurant> findByEmail(String email);
+    Optional<Restaurant> findByPhoneNumber(String phoneNumber);
 
 
 }

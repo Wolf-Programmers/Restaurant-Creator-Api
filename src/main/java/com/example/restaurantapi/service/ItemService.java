@@ -14,9 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+
 /**
  * @Author Szymon Królik
  */
@@ -31,7 +30,7 @@ public class ItemService {
 
     private final ValidationService validationService;
 
-    private List<String> validationResult = new ArrayList<>();
+    private Map<String, String> validationResult = new HashMap<String, String>();
 
     /**
      * Create new item for restaurant

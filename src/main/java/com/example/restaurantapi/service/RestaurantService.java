@@ -15,9 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -34,7 +32,7 @@ public class RestaurantService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ValidationService validationService;
     private final EmailService emailService;
-    private List<String> validationResult = new ArrayList<>();
+    private Map<String, String> validationResult = new HashMap<String, String>();
 
     /**
      * Function for saving new restaurnt in database
@@ -60,6 +58,23 @@ public class RestaurantService {
             return ret;
         }
 
+        Optional<Restaurant> optionalRestaurant = restaurantRepository.findByEmail(addRestaurantDto.getEmail());
+        if (optionalRestaurant.isPresent()) {
+            ret.setStatus(-1);
+            validationResult.put("email", "Restauracja o podanym email już istnieje");
+            ret.setErrorList(validationResult);
+            ret.setValue((Object) addRestaurantDto);
+            return ret;
+        }
+
+        Optional<Restaurant> optionalRestaurantPhoneNumber = restaurantRepository.findByPhoneNumber(addRestaurantDto.getPhoneNumber());
+        if (optionalRestaurantPhoneNumber.isPresent()) {
+            ret.setStatus(-1);
+            validationResult.put("email", "Restauracja o podanym numerze telefonu już istnieje");
+            ret.setErrorList(validationResult);
+            ret.setValue((Object) addRestaurantDto);
+            return ret;
+        }
         validationResult = validationService.restaurantValidation(addRestaurantDto);
         if (validationResult.size() > 0) {
             ret.setStatus(-1);

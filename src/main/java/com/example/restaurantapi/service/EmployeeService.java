@@ -11,9 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @Author Szymon Królik
@@ -25,7 +23,7 @@ public class EmployeeService {
     private final RestaurantRepository restaurantRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ValidationService validationService;
-    private List<String> validationResult = new ArrayList<>();
+    private Map<String, String> validationResult = new HashMap<String, String>();
 
     public ServiceReturn addEmployeeToRestaurant(AddEmployeeDto dto) {
         ServiceReturn ret = new ServiceReturn();

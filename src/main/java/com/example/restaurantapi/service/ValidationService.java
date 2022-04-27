@@ -15,9 +15,7 @@ import java.sql.Time;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @Author Szymon Królik
@@ -25,9 +23,9 @@ import java.util.Optional;
 @Service
 public class ValidationService {
 
-    public List<String> errList = new ArrayList<>();
+    public Map<String, String> errList = new HashMap<String, String>();
 
-    public List<String> registerValidation(RegisterUserDto dto) {
+    public Map<String, String> registerValidation(RegisterUserDto dto) {
         String password = "";
         String matchingPassword = "";
         String email = "";
@@ -40,35 +38,40 @@ public class ValidationService {
             phoneNumber = dto.getPhone_number();
 
             if (ServiceFunction.isNull(password)) {
-                errList.add("Proszę uzupełnić hasło");
+                errList.put("password", "Proszę uzupełnić hasło");
             }
             if (ServiceFunction.isNull(matchingPassword)) {
-                errList.add("Proszę uzupełnić hasło");
+                errList.put("matchingPassword", "Proszę uzupełnić hasło");
             }
             if (!password.equals(matchingPassword)) {
-                errList.add("Hasła się różnią");
+                errList.put("matchingPassword", "Hasła się różnią");
+
             }
             if (ServiceFunction.isNull(email)) {
-                errList.add("Proszę uzupełnić email");
+                errList.put("email", "Proszę uzupełnić email");
+
             }
             if (!ServiceFunction.validEmail(email)) {
-                errList.add("Niepoprawny format email");
+                errList.put("email", "Niepoprawny format email");
+
             }
             if (ServiceFunction.isNull(phoneNumber)) {
-                errList.add("Proszę uzupełnić numer telefonu");
+                errList.put("phoneNumber", "Proszę uzupełnić numer telefonu");
+
             }
             if (!ServiceFunction.validPhoneNumber(phoneNumber)) {
-                errList.add("Proszę podać poprawny numer telefonu");
+                errList.put("phoneNumber", "Proszę podać poprawny numer telefonu");
+
             }
         } else {
-            errList.add("Proszę uzupełnić dane");
+            errList.put("error", "Proszę podać poprawny numer telefonu");
         }
 
         return errList;
 
     }
 
-    public List<String> restaurantValidation(AddRestaurantDto dto) {
+    public Map<String, String> restaurantValidation(AddRestaurantDto dto) {
         String email;
         String phoneNumber;
 
@@ -77,26 +80,31 @@ public class ValidationService {
             phoneNumber = dto.getPhoneNumber();
 
             if (ServiceFunction.isNull(email)) {
-                errList.add("Proszę podać email restauracji");
+                errList.put("email", "Proszę podać email restauracji");
+
             }
             if (!ServiceFunction.validEmail(email)) {
-                errList.add("Proszę podać prawidłowy adres email restauracji");
+                errList.put("email", "Proszę podać prawidłowy adres email restauracji");
+
             }
             if (ServiceFunction.isNull(phoneNumber)) {
-                errList.add("Proszę podać numer telefonu restauracji");
+                errList.put("phoneNumber", "Proszę podać numer telefonu restauracji");
+
             }
             if (!ServiceFunction.validPhoneNumber(phoneNumber)) {
-                errList.add("Proszę podać prawidłowy numer telefonu restarucaji");
+                errList.put("phoneNumber", "Proszę podać prawidłowy numer telefonu restarucaji");
+
             }
         } else {
-            errList.add("Proszę podać dane restauracji");
+            errList.put("error", "Proszę podać dane restauracji");
+
         }
 
         return errList;
     }
 
     //TODO sprawdzic czy podane menu juz nie istanieje dla restauracji
-    public List<String> menuValidation(CreateMenuDto dto) {
+    public Map<String,String> menuValidation(CreateMenuDto dto) {
         String name;
         int creatorId;
         int menuTypeId;
@@ -106,120 +114,150 @@ public class ValidationService {
             if (!ServiceFunction.isNull(dto.getName())) {
                 name = dto.getName();
             } else {
-                errList.add("Proszę podać nazwę menu");
+                errList.put("name", "Proszę podać nazwę menu");
+
             }
             if (!ServiceFunction.isNull(dto.getCreatorId())) {
                 creatorId = dto.getCreatorId();
             } else {
-                errList.add("Proszę podać twórcę menu");
+                errList.put("menu", "Proszę podać twórcę menu");
+
             }
             if (!ServiceFunction.isNull(dto.getMenuTypeId())) {
                 menuTypeId = dto.getMenuTypeId();
             } else {
-                errList.add("Proszę podać rodzaj menu");
+                errList.put("menuType", "Proszę podać rodzaj menu");
+
             }
             if (!ServiceFunction.isNull(dto.getRestaurantId())) {
                 restaurantId = dto.getRestaurantId();
             } else {
-                errList.add("Proszę wybrać restauracje");
+                errList.put("restaurant", "Proszę wybrać restauracje");
+
             }
         } else {
-            errList.add("Proszę uzupełnić dane");
+            errList.put("error", "Proszę uzupełnić dane");
+
         }
 
         return errList;
     }
 
 
-    public List<String> itemValidation(CreateItemDto dto) {
+    public Map<String, String> itemValidation(CreateItemDto dto) {
 
         Double quantity =0.0;
         Double price = 0.0;
 
         if (!ServiceFunction.isNull(dto)) {
             if (ServiceFunction.isNull(dto.getTitle()))
-                errList.add("Proszę podać nazwę produktu");
+                errList.put("title", "Proszę podać nazwę produktu");
+
             if (ServiceFunction.isNull(dto.getDesc()))
-                errList.add("Proszę podać opis produktu");
+                errList.put("desc", "Proszę podać opis produktu");
+
             if (ServiceFunction.isNull(dto.getQuantity())) {
-                errList.add("Proszę podać ilość produktu");
+                errList.put("quantity", "Proszę podać ilość produktu");
+
             } else {
                 quantity = dto.getQuantity();
                 if (quantity <= 0.0)
-                    errList.add("Ilość produktu nie może być zerowa lub ujemna");
+                    errList.put("quantity", "Ilość produktu nie może być zerowa lub ujemna");
+
             }
             if (ServiceFunction.isNull(dto.getPrice())) {
-                errList.add("Proszę podać cenę produktu");
+                errList.put("price", "Proszę podać cenę produktu");
+
             } else {
                 price = dto.getPrice();
                 if (price < 0.0)
-                    errList.add("Cena produktu nie może być ujemna");
+                    errList.put("price", "Cena produktu nie może być ujemna");
+
             }
             if (ServiceFunction.isNull(dto.getItemType()))
-                errList.add("Proszę podać typ produktu");
+                errList.put("itemType", "Proszę podać typ produktu");
+
 
         } else {
-            errList.add("Proszę uzupełnić dane");
+            errList.put("error", "Proszę uzupełnić dane");
+
         }
 
         return errList;
     }
 
-    public List<String> addEmployeeValidation(AddEmployeeDto dto) {
+    public Map<String, String> addEmployeeValidation(AddEmployeeDto dto) {
         if (!ServiceFunction.isNull(dto)) {
             if (ServiceFunction.isNull(dto.getRestaurantId()))
-                errList.add("Proszę podać restauracje");
+                errList.put("restaurantId", "Proszę podać restauracje");
+
 
             if (ServiceFunction.isNull(dto.getLastName()))
-                errList.add("Proszę podać nazwisko pracowanika");
+                errList.put("lastName", "Proszę podać nazwisko pracowanika");
+
 
             if (ServiceFunction.isNull(dto.getName()))
-                errList.add("Proszę podać imie pracownika");
+                errList.put("name", "Proszę podać imie pracownika");
+
 
             if (ServiceFunction.isNull(dto.getEmail())) {
-                errList.add("Proszę podać email pracownika");
+                errList.put("email", "Proszę podać email pracownika");
+
             } else {
                 if (!ServiceFunction.validEmail(dto.getEmail()))
-                    errList.add("Proszę podać poprawny email pracownika");
+                    errList.put("email", "Proszę podać poprawny email pracownika");
+
             }
 
             if (ServiceFunction.isNull(dto.getPassword()))
-                errList.add("Proszę podać hasło dla pracownika");
+                errList.put("password", "Proszę podać hasło dla pracownika");
+
 
             if (ServiceFunction.isNull(dto.getPhoneNumber())) {
-                errList.add("Proszę podać numer telefonu pracownika");
+                errList.put("phoneNumber", "Proszę podać numer telefonu pracownika");
+
+
             } else {
                 if (!ServiceFunction.validPhoneNumber(dto.getPhoneNumber()))
-                    errList.add("Proszę podać poprawny numer telefonu pracownika");
+                    errList.put("phoneNumber", "Proszę podać poprawny numer telefonu pracownika");
+
             }
 
             if (ServiceFunction.isNull(dto.getSalary())) {
-                errList.add("Proszę podać wynagrodzenia pracownika");
+                errList.put("salary", "Proszę podać wynagrodzenia pracownika");
+
             } else {
                 if (dto.getSalary() <= 0.0)
-                    errList.add("Proszę podać poprawne wynagrodzenie");
+                    errList.put("salary", "Proszę podać poprawne wynagrodzenie");
+
             }
 
 
         } else {
-            errList.add("Obiekt nie może być nullem");
+            errList.put("error", "Obiekt nie może być nullem");
+
         }
 
         return errList;
     }
-    public List<String> addCuponValidation(CreateCuponDto dto) {
+    public Map<String, String> addCuponValidation(CreateCuponDto dto) {
         if (!ServiceFunction.isNull(dto)) {
             if (ServiceFunction.isNull(dto.getRestaurant()))
-                errList.add("Proszę podać restauracje");
+                errList.put("restaurant", "Proszę podać restauracje");
+
 
             if (ServiceFunction.isNull(dto.getCuponCode()))
-                errList.add("Proszę podać lub wygenerowac kod kuponu.");
+                errList.put("cupon", "Proszę podać lub wygenerowac kod kuponu.");
+
+
 
             if (ServiceFunction.isNull(dto.getMaxUse()))
-                errList.add("Proszę podać maksymalna liczbę użyć.");
+                errList.put("maxUse", "Proszę podać maksymalna liczbę użyć.");
+
 
         } else {
-            errList.add("Obiekt nie może być nullem");
+            errList.put("error", "Obiekt nie może być nullem");
+
         }
 
         return errList;

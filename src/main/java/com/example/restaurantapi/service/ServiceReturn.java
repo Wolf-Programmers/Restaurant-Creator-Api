@@ -3,6 +3,7 @@ package com.example.restaurantapi.service;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author Szymon Królik
@@ -11,6 +12,6 @@ import java.util.List;
 public class ServiceReturn {
     public Object value;
     public int status;
-    public List<String> errorList;
+    public Map<String, String> errorList;
     public String message;
 }
