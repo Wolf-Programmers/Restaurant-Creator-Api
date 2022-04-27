@@ -21,6 +21,10 @@ public class RestaurantController {
 
     private final RestaurantService restaurantService;
 
+    @GetMapping("/get-types")
+    public ServiceReturn getResturantTypes() {
+        return restaurantService.getResturantTypes();
+    }
     @PutMapping("/add")
     public ServiceReturn addRestaurant(@RequestBody AddRestaurantDto dto) throws ParseException {
         return restaurantService.addRestaurantToUserAccount(dto);

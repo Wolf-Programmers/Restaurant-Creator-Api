@@ -300,4 +300,15 @@ public class RestaurantService {
 
     }
 
+    public ServiceReturn getResturantTypes() {
+        ServiceReturn ret = new ServiceReturn();
+        List<RestaurantType> restaurantTypesList = restaurantTypeRepository.findAll();
+        List<RestaurantTypes> restaurantTypes = new ArrayList<>();
+        for (RestaurantType restaurantType : restaurantTypesList) {
+            restaurantTypes.add(RestaurantTypes.of(restaurantType));
+        }
+        ret.setValue((Object) restaurantTypes);
+        return ret;
+    }
+
 }

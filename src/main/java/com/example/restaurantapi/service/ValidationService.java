@@ -95,6 +95,8 @@ public class ValidationService {
                 errList.put("phoneNumber", "Proszę podać prawidłowy numer telefonu restarucaji");
 
             }
+            if (ServiceFunction.isNull(dto.getOpeningTimes()))
+                errList.put("openingTimes", "Proszę podać godziny otwarcia");
         } else {
             errList.put("error", "Proszę podać dane restauracji");
 
