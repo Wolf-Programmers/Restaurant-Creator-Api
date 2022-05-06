@@ -1,23 +1,21 @@
-package com.example.restaurantapi.dto.restaurant;
+package com.example.restaurantapi.dto.employee;
 
 import com.example.restaurantapi.model.Employee;
-import com.example.restaurantapi.model.EmployeeRole;
 import lombok.Data;
 
-/**
- * @Author Szymon Królik
- */
 @Data
-public class CreatedEmployeeDto {
+public class EmployeeInformationDto {
+    public int id;
     public String name;
     public String lastName;
     public String phoneNumber;
     public String email;
-    public Double salary;
+    public double salary;
 
-    public static CreatedEmployeeDto of(Employee employee) {
-        CreatedEmployeeDto dto = new CreatedEmployeeDto();
+    public static EmployeeInformationDto of(Employee employee) {
+        EmployeeInformationDto dto = new EmployeeInformationDto();
 
+        dto.setId(employee.getId());
         dto.setName(employee.getName());
         dto.setLastName(employee.getLastName());
         dto.setPhoneNumber(employee.getPhoneNumber());
@@ -26,5 +24,4 @@ public class CreatedEmployeeDto {
 
         return dto;
     }
-
 }

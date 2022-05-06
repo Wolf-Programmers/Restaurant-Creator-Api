@@ -4,17 +4,11 @@ package com.example.restaurantapi.service;
 import com.example.restaurantapi.dto.cupon.CreateCuponDto;
 import com.example.restaurantapi.dto.item.CreateItemDto;
 import com.example.restaurantapi.dto.menu.CreateMenuDto;
-import com.example.restaurantapi.dto.restaurant.AddEmployeeDto;
+import com.example.restaurantapi.dto.employee.AddEmployeeDto;
 import com.example.restaurantapi.dto.restaurant.AddRestaurantDto;
 import com.example.restaurantapi.dto.user.RegisterUserDto;
-import com.example.restaurantapi.model.User;
-import io.grpc.Server;
 import org.springframework.stereotype.Service;
 
-import java.sql.Time;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -242,6 +236,7 @@ public class ValidationService {
 
         return errList;
     }
+
     public Map<String, String> addCuponValidation(CreateCuponDto dto) {
         if (!ServiceFunction.isNull(dto)) {
             if (ServiceFunction.isNull(dto.getRestaurant()))
@@ -264,4 +259,6 @@ public class ValidationService {
 
         return errList;
     }
+
+
 }

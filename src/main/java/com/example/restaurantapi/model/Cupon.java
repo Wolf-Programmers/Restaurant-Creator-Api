@@ -1,8 +1,6 @@
 package com.example.restaurantapi.model;
 
 import com.example.restaurantapi.dto.cupon.CreateCuponDto;
-import com.example.restaurantapi.dto.item.CreateItemDto;
-import com.example.restaurantapi.dto.restaurant.AddEmployeeDto;
 import lombok.Data;
 
 import javax.persistence.*;

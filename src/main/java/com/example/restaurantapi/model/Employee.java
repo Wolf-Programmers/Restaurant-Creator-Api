@@ -1,6 +1,6 @@
 package com.example.restaurantapi.model;
 
-import com.example.restaurantapi.dto.restaurant.AddEmployeeDto;
+import com.example.restaurantapi.dto.employee.AddEmployeeDto;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -31,12 +31,14 @@ public class Employee {
     @Column(nullable = false)
     private Double salary;
 
-    @Column(nullable = false)
-    private EmployeeRole role;
+
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
+
+    @ManyToOne
+    private EmployeeRole employeeRole;
 
     public static Employee of(AddEmployeeDto dto) {
         Employee employee = new Employee();

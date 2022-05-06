@@ -3,7 +3,6 @@ package com.example.restaurantapi.service;
 import com.example.restaurantapi.biznesobject.MenuInformation;
 import com.example.restaurantapi.biznesobject.OpeningTimes;
 import com.example.restaurantapi.biznesobject.RestaurantTypes;
-import com.example.restaurantapi.dto.restaurant.AddEmployeeDto;
 import com.example.restaurantapi.dto.restaurant.AddRestaurantDto;
 import com.example.restaurantapi.dto.restaurant.CreatedRestaurantDto;
 import com.example.restaurantapi.dto.restaurant.InfoRestaurantDto;
@@ -13,10 +12,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.text.ParseException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @Author Szymon Królik
@@ -300,15 +297,22 @@ public class RestaurantService {
 
     }
 
-    public ServiceReturn getResturantTypes() {
+    /**
+     * Get all restaurant types from database
+     * @author Szymon Królik
+     * @return List<RestaurantTypes>
+     */
+    public ServiceReturn getRestaurantTypes() {
         ServiceReturn ret = new ServiceReturn();
         List<RestaurantType> restaurantTypesList = restaurantTypeRepository.findAll();
         List<RestaurantTypes> restaurantTypes = new ArrayList<>();
         for (RestaurantType restaurantType : restaurantTypesList) {
             restaurantTypes.add(RestaurantTypes.of(restaurantType));
         }
-        ret.setValue((Object) restaurantTypes);
+        ret.setValue(restaurantTypes);
         return ret;
     }
+
+
 
 }
