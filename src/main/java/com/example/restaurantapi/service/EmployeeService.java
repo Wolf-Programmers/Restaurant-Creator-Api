@@ -6,6 +6,7 @@ import com.example.restaurantapi.dto.employee.EmployeeInformationDto;
 import com.example.restaurantapi.model.Employee;
 import com.example.restaurantapi.model.EmployeeRole;
 import com.example.restaurantapi.model.Restaurant;
+import com.example.restaurantapi.model.UserRole;
 import com.example.restaurantapi.repository.EmployeeRepository;
 import com.example.restaurantapi.repository.EmployeeRoleRepository;
 import com.example.restaurantapi.repository.RestaurantRepository;
@@ -86,6 +87,51 @@ public class EmployeeService {
         ret.setStatus(1);
         return ret;
 
+
+
+    }
+
+    public ServiceReturn getEmployee(int employeeId) {
+        ServiceReturn ret = new ServiceReturn();
+        Optional<Employee> employeeOptional = employeeRepository.findById(employeeId);
+        if (employeeOptional.isEmpty()) {
+            ret.setMessage("Nie znaleziono takiego pracownika");
+            ret.setStatus(0);
+            return ret;
+        }
+        EmployeeInformationDto employeeInformationDto = EmployeeInformationDto.of(employeeOptional.get());
+        ret.setValue(employeeInformationDto);
+        ret.setStatus(1);
+        return ret;
+    }
+
+    public ServiceReturn updateEmployee(EmployeeInformationDto dto) {
+      ServiceReturn ret = new ServiceReturn();
+        Optional<Employee> optionalEmployee = employeeRepository.findById(dto.getId());
+        if (optionalEmployee.isEmpty()) {
+            ret.setMessage("Nie znaleziono takiego użytkownika");
+            ret.setStatus(0);
+            return ret;
+        }
+        Optional<EmployeeRole> optionalEmployeeRole = employeeRoleRepository.findById(dto.getEmployeeRoleId());
+        if (optionalEmployeeRole.isEmpty()) {
+            ret.setMessage("Nie znaleziono takiej roli dla pracownika");
+            ret.setStatus(0);
+            return ret;
+        }
+        dto.setEmployeeRoleModel(optionalEmployeeRole.get());
+        Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(dto.getEmployeeRestaurantId());
+        if (optionalRestaurant.isEmpty()) {
+            ret.setMessage("Nie znaleziono takiej restauracji");
+            ret.setStatus(0);
+            return ret;
+        }
+        dto.setEmployeeRestaurantModel(optionalRestaurant.get());
+        Employee employee = employeeRepository.save(Employee.updateEmployee(optionalEmployee.get(), dto));
+        ret.setValue(EmployeeInformationDto.of(employee));
+        ret.setStatus(1);
+
+        return ret;
 
 
     }

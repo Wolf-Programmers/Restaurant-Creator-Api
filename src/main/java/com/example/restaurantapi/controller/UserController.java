@@ -3,6 +3,7 @@ package com.example.restaurantapi.controller;
 import com.example.restaurantapi.dto.user.LoginUserDto;
 import com.example.restaurantapi.dto.user.RegisterUserDto;
 import com.example.restaurantapi.dto.user.ResendMailDto;
+import com.example.restaurantapi.dto.user.UserInformationDto;
 import com.example.restaurantapi.model.ConfirmationToken;
 import com.example.restaurantapi.model.User;
 import com.example.restaurantapi.repository.ConfirmationTokenRepository;
@@ -61,10 +62,6 @@ public class UserController {
 
         return ret;
     }
-
-
-
-
     @GetMapping("/confirm")
     public String confirmMail(@RequestParam("token") String token) {
 
@@ -74,6 +71,11 @@ public class UserController {
 
         return "Udało się potwiedzić konto!";
     }
+    @PutMapping("/update")
+    public ServiceReturn passwordChange(@RequestBody UserInformationDto dto) {
+        return userService.updateUser(dto);
+    }
+
 
 
 }

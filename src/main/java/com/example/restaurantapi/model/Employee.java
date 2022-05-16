@@ -1,6 +1,7 @@
 package com.example.restaurantapi.model;
 
 import com.example.restaurantapi.dto.employee.AddEmployeeDto;
+import com.example.restaurantapi.dto.employee.EmployeeInformationDto;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -48,7 +49,33 @@ public class Employee {
         employee.setEmail(dto.getEmail());
         employee.setSalary(dto.getSalary());
 
+
         return employee;
     }
 
+    public static Employee of(EmployeeInformationDto dto) {
+        Employee employee = new Employee();
+        employee.setName(dto.getName());
+        employee.setLastName(dto.getLastName());
+        employee.setPhoneNumber(dto.getPhoneNumber());
+        employee.setEmail(dto.getEmail());
+        employee.setSalary(dto.getSalary());
+        employee.setEmployeeRole(dto.getEmployeeRoleModel());
+        employee.setPassword(dto.getPassword());
+        return employee;
+    }
+
+     public static Employee updateEmployee(Employee employee, EmployeeInformationDto dto) {
+
+        employee.setName(dto.getName());
+        employee.setLastName(dto.getLastName());
+        employee.setPhoneNumber(dto.getPhoneNumber());
+        employee.setEmail(dto.getEmail());
+        employee.setSalary(dto.getSalary());
+        employee.setEmployeeRole(dto.getEmployeeRoleModel());
+        employee.setPassword(dto.getPassword());
+        employee.setRestaurant(dto.getEmployeeRestaurantModel());
+
+        return employee;
+    }
 }

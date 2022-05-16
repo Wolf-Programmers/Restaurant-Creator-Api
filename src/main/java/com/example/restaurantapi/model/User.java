@@ -2,6 +2,7 @@ package com.example.restaurantapi.model;
 
 import com.example.restaurantapi.dto.user.LoginUserDto;
 import com.example.restaurantapi.dto.user.RegisterUserDto;
+import com.example.restaurantapi.dto.user.UserInformationDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -100,6 +101,14 @@ public class User implements UserDetails, Serializable {
         user.setEmail(dto.getEmail());
         user.setPassword(dto.getPassword());
         user.setPhoneNumber(dto.getPhone_number());
+
+        return user;
+    }
+
+    public static User updateUser(User user,UserInformationDto dto) {
+        user.setName(dto.getName());
+        user.setPhoneNumber(dto.getPhoneNumber());
+        user.setEmail(dto.getEmail());
 
         return user;
     }

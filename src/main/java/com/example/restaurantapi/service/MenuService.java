@@ -156,6 +156,26 @@ public class MenuService {
 
     }
 
+    public ServiceReturn showRestaurantMenus(int restaurantId) {
+        ServiceReturn ret = new ServiceReturn();
+        Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(restaurantId);
+        if (optionalRestaurant.isEmpty()) {
+            ret.setMessage("Nie znaleziono takiej restauracji");
+            ret.setStatus(0);
+            return ret;
+        }
+        List<Menu> menuList = optionalRestaurant.get().getMenus();
+        List<MenuItemsDto> menus = new ArrayList<>();
+        for (Menu menu : menuList) {
+            MenuItemsDto dto = MenuItemsDto.of(menu);
+            menus.add(dto);
+        }
+
+        ret.setValue(menus);
+        ret.setStatus(1);
+        return ret;
+    }
+
 
 
 

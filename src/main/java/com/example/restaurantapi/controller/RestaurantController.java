@@ -23,6 +23,7 @@ public class RestaurantController {
     public ServiceReturn getResturantTypes() {
         return restaurantService.getRestaurantTypes();
     }
+
     @PutMapping("/add")
     public ServiceReturn addRestaurant(@RequestBody AddRestaurantDto dto) throws ParseException {
         return restaurantService.addRestaurantToUserAccount(dto);
@@ -39,9 +40,14 @@ public class RestaurantController {
         return restaurantService.getRestaurantByName(name);
     }
 
-    @GetMapping("info-city")
+    @GetMapping("/info-city")
     public ServiceReturn getRestaurantByCity(@RequestParam("city") String city) {
         return restaurantService.getRestaurantsByCity(city);
+    }
+
+    @GetMapping("/get-restaurants")
+    public ServiceReturn getRestaurantByOwner(@RequestParam("ownerId") int ownerId) {
+        return restaurantService.getResturantsByOwner(ownerId);
     }
 
 }

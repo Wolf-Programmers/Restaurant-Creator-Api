@@ -1,9 +1,6 @@
 package com.example.restaurantapi.service;
 
-import com.example.restaurantapi.dto.user.LoggeduserDto;
-import com.example.restaurantapi.dto.user.LoginUserDto;
-import com.example.restaurantapi.dto.user.RegisterUserDto;
-import com.example.restaurantapi.dto.user.ResendMailDto;
+import com.example.restaurantapi.dto.user.*;
 import com.example.restaurantapi.model.ConfirmationToken;
 import com.example.restaurantapi.model.User;
 import com.example.restaurantapi.repository.ConfirmationTokenRepository;
@@ -59,20 +56,21 @@ public class UserService implements UserDetailsService {
                 ret.setValue(registerUserDto);
 
                 return ret;
-            } else {
-                User user = User.of(registerUserDto);
-                final String encryptedPassword = bCryptPasswordEncoder.encode(user.getPassword());
-                user.setPassword(encryptedPassword);
-                final User createdUser = userRepository.save(user);
-                final ConfirmationToken confirmationToken = new ConfirmationToken(createdUser);
-                confirmationTokenService.saveConfirmationToken(confirmationToken);
+            }
+
+            User user = User.of(registerUserDto);
+            final String encryptedPassword = bCryptPasswordEncoder.encode(user.getPassword());
+            user.setPassword(encryptedPassword);
+            final User createdUser = userRepository.save(user);
+            final ConfirmationToken confirmationToken = new ConfirmationToken(createdUser);
+            confirmationTokenService.saveConfirmationToken(confirmationToken);
 
 //                sendConfirmationToken(user.getEmail(), confirmationToken.getConfirmationToken());
 
-                ret.setStatus(1);
-                ret.setErrorList(null);
-                ret.setValue((Object) createdUser);
-            }
+            ret.setStatus(1);
+            ret.setErrorList(null);
+            ret.setValue((Object) createdUser);
+
         } else {
 
             ret.setStatus(-1);
@@ -320,7 +318,6 @@ public class UserService implements UserDetailsService {
     /**
      * Set enabled on true for user after confirm activation link
      * @author Szymon Królik
-     * @author Szymon Królik
      * @param confirmationToken
      */
     public void confirmUser(ConfirmationToken confirmationToken) {
@@ -332,6 +329,34 @@ public class UserService implements UserDetailsService {
         confirmationTokenService.deleteConfirmationToken(confirmationToken.getId());
     }
 
+    /**
+     * Update user information
+     * @author Szymon Królik
+     * @param UserInformationDto
+     */
+    public ServiceReturn updateUser(UserInformationDto dto) {
+        ServiceReturn ret = new ServiceReturn();
+        Optional<User> optionalUser = userRepository.findById(dto.getId());
+        if (optionalUser.isEmpty()) {
+            ret.setMessage("Nie znaleziono takiego użytkownika");
+            ret.setStatus(0);
+            return ret;
+        }
+        final String encryptedPassword = bCryptPasswordEncoder.encode(dto.getPassword());
+        dto.setPassword(encryptedPassword);
+
+        try {
+            User user = userRepository.save(User.updateUser(optionalUser.get(), dto));
+            ret.setValue(UserInformationDto.of(user));
+            ret.setStatus(1);
+            return  ret;
+        } catch (Exception ex) {
+            ret.setMessage(ex.getMessage());
+            return  ret;
+        }
+
+
+    }
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return null;

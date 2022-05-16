@@ -7,6 +7,8 @@ import com.example.restaurantapi.service.ServiceReturn;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+
+
 /**
  * @Author Szymon Królik
  */
@@ -33,6 +35,12 @@ public class MenuController {
 
         return menuService.showMenuById(menuId, restaurantId);
     }
+
+    @GetMapping("/show-restaurant-menus")
+    public ServiceReturn showRestaurantMenus(@RequestParam("restaurantId") int restaurantId) {
+        return menuService.showRestaurantMenus(restaurantId);
+    }
+
 
 
 
