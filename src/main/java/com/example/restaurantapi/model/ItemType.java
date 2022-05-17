@@ -17,7 +17,7 @@ public class ItemType {
     @Column(nullable = false)
     private String name;
 
-    @OneToMany(cascade=CascadeType.ALL)
+    @OneToMany
     @JoinColumn(name="item_id")
     private List<Item> items;
 

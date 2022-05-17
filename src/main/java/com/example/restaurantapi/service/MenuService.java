@@ -81,10 +81,16 @@ public class MenuService {
         createMenuDto.setMenuType(menuTypeOptional.get());
         Menu prepareMenu = Menu.of(createMenuDto);
         prepareMenu.setRestaurant_menu(restaurantOptional.get());
-        Menu createdMenu = menuRepository.save(prepareMenu);
+        try {
+            Menu createdMenu = menuRepository.save(prepareMenu);
 
-        ret.setStatus(1);
-        ret.setValue(CreatedMenuDto.of(createdMenu));
+            ret.setStatus(1);
+            ret.setValue(CreatedMenuDto.of(createdMenu));
+        } catch (Exception ex) {
+            ret.setMessage("Err. create menu " + ex.getMessage());
+            ret.setStatus(-1);
+        }
+
 
         return ret;
     }
@@ -126,9 +132,16 @@ public class MenuService {
         menu.setMenuItems(itemsList);
         Menu updatedMenu = menuRepository.save(menu);
 
-        MenuItemsDto retMenu = MenuItemsDto.of(updatedMenu);
+        try {
+            MenuItemsDto retMenu = MenuItemsDto.of(updatedMenu);
 
-        ret.setValue(retMenu);
+            ret.setValue(retMenu);
+            ret.setStatus(1);
+        } catch (Exception ex) {
+            ret.setMessage("Err. add item to menu "  + ex.getMessage());
+            ret.setStatus(-1);
+        }
+
         return ret;
     }
 

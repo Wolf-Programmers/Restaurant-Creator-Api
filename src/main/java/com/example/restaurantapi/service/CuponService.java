@@ -39,11 +39,15 @@ public class CuponService  {
             return ret;
         } else {
             Cupon cupon = Cupon.of(createCuponDto);
-            final Cupon createdCupon = cuponRepository.save(cupon);
+            try {
+                final Cupon createdCupon = cuponRepository.save(cupon);
+                ret.setStatus(1);
+                ret.setValue(createdCupon);
+            } catch (Exception ex) {
+                ret.setMessage("Create cupon: " + ex.getMessage());
+                ret.setStatus(-1);
+            }
 
-            ret.setStatus(1);
-            ret.setErrorList(null);
-            ret.setValue((Object) createdCupon);
             return ret;
         }
     }

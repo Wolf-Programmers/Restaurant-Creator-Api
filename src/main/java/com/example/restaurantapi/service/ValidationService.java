@@ -6,6 +6,7 @@ import com.example.restaurantapi.dto.item.CreateItemDto;
 import com.example.restaurantapi.dto.menu.CreateMenuDto;
 import com.example.restaurantapi.dto.employee.AddEmployeeDto;
 import com.example.restaurantapi.dto.restaurant.AddRestaurantDto;
+import com.example.restaurantapi.dto.restaurant.UpdateRestaurantDto;
 import com.example.restaurantapi.dto.user.RegisterUserDto;
 import org.springframework.stereotype.Service;
 
@@ -69,7 +70,7 @@ public class ValidationService {
         String email;
         String phoneNumber;
 
-        if (!ServiceFunction.isNull((Object) dto)) {
+        if (!ServiceFunction.isNull(dto)) {
             email = dto.getEmail();
             phoneNumber = dto.getPhoneNumber();
 
@@ -90,6 +91,40 @@ public class ValidationService {
 
             }
             if (ServiceFunction.isNull(dto.getOpeningTimes()))
+                errList.put("openingTimes", "Proszę podać godziny otwarcia");
+        } else {
+            errList.put("error", "Proszę podać dane restauracji");
+
+        }
+
+        return errList;
+    }
+
+    public Map<String, String> restaurantValidation(UpdateRestaurantDto dto) {
+        String email;
+        String phoneNumber;
+
+        if (!ServiceFunction.isNull(dto)) {
+            email = dto.getEmail();
+            phoneNumber = dto.getPhoneNumber();
+
+            if (ServiceFunction.isNull(email)) {
+                errList.put("email", "Proszę podać email restauracji");
+
+            }
+            if (!ServiceFunction.validEmail(email)) {
+                errList.put("email", "Proszę podać prawidłowy adres email restauracji");
+
+            }
+            if (ServiceFunction.isNull(phoneNumber)) {
+                errList.put("phoneNumber", "Proszę podać numer telefonu restauracji");
+
+            }
+            if (!ServiceFunction.validPhoneNumber(phoneNumber)) {
+                errList.put("phoneNumber", "Proszę podać prawidłowy numer telefonu restarucaji");
+
+            }
+            if (ServiceFunction.isNull(dto.getOpeningPeriod()))
                 errList.put("openingTimes", "Proszę podać godziny otwarcia");
         } else {
             errList.put("error", "Proszę podać dane restauracji");

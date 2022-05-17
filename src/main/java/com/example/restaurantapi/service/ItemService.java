@@ -2,6 +2,7 @@ package com.example.restaurantapi.service;
 
 import com.example.restaurantapi.dto.item.CreateItemDto;
 import com.example.restaurantapi.dto.item.CreatedItemDto;
+import com.example.restaurantapi.dto.item.UpdateItemDto;
 import com.example.restaurantapi.model.Item;
 import com.example.restaurantapi.model.ItemType;
 import com.example.restaurantapi.model.Restaurant;
@@ -70,11 +71,18 @@ public class ItemService {
         }
 
         item.setItemType(optionalItemType.get());
-        Item createdItem = itemRepository.save(item);
+        try {
+            Item createdItem = itemRepository.save(item);
 
-        CreatedItemDto createdItemDto = CreatedItemDto.of(createdItem);
+            CreatedItemDto createdItemDto = CreatedItemDto.of(createdItem);
 
-        ret.setValue(createdItemDto);
+            ret.setValue(createdItemDto);
+            ret.setStatus(1);
+        } catch (Exception ex) {
+            ret.setMessage("Err. create item " + ex.getMessage());
+            ret.setStatus(-1);
+        }
+
         return ret;
 
     }
@@ -187,6 +195,90 @@ public class ItemService {
         ret.setValue(itemsInfo);
         return ret;
 
+    }
+
+    public ServiceReturn updateItem(UpdateItemDto dto) {
+        ServiceReturn ret = new ServiceReturn();
+        Optional<Item> optionalItem = itemRepository.findById(dto.getId());
+        if (optionalItem.isEmpty()) {
+            ret.setMessage("Niestety nie znaleziono takiego przedmiotu");
+            ret.setStatus(0);
+            return ret;
+        }
+        Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(dto.getRestaurantId());
+        if (optionalRestaurant.isEmpty()){
+            ret.setMessage("Niestety nie znaleziono takiej retauracji");
+            ret.setStatus(0);
+            return ret;
+        }
+
+        if (!itemBelongToRestaurant(dto.getId(), optionalRestaurant.get().getItems())) {
+            ret.setMessage("Ta pozycja nie należy do podanej restauracji");
+            ret.setStatus(0);
+            return ret;
+        }
+        dto.setRestaurant(optionalRestaurant.get());
+
+        Optional<ItemType> optionalItemType = itemTypeRepository.findById(dto.getItemTypeId());
+        if (optionalItemType.isEmpty()) {
+            ret.setMessage("Nie znaleziono takiego typu menu");
+            ret.setStatus(0);
+            return ret;
+        }
+        dto.setItemType(optionalItemType.get());
+        try {
+            Item item = itemRepository.save(Item.updateItem(optionalItem.get(), dto));
+            ret.setValue(CreatedItemDto.of(item));
+            ret.setStatus(1);
+        } catch (Exception ex) {
+            ret.setMessage("Err. update item " + ex.getMessage());
+        }
+
+
+        return ret;
+
+
+    }
+
+    public ServiceReturn deleteItem(int itemId, int restaurantId) {
+        ServiceReturn ret = new ServiceReturn();
+        Optional<Item> optionalItem = itemRepository.findById(itemId);
+        if (optionalItem.isEmpty()) {
+            ret.setMessage("Nie znaleziono takiego przedmiotu");
+            ret.setStatus(0);
+            return  ret;
+        }
+
+        Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(restaurantId);
+        if (optionalRestaurant.isEmpty()) {
+            ret.setMessage("Nie znaleziono takiej restauracji");
+            ret.setStatus(0);
+            return  ret;
+        }
+
+        if (!itemBelongToRestaurant(itemId, optionalRestaurant.get().getItems())) {
+            ret.setMessage("Ten przedmiot nie należy do tej restaurcji");
+            ret.setStatus(0);
+            return ret;
+        }
+        try {
+            itemRepository.deleteById(itemId);
+            ret.setStatus(1);
+            ret.setMessage("Pomyślnie usunięto przedmiot");
+        } catch (Exception ex) {
+            ret.setMessage("Err. delete item " + ex.getMessage());
+            ret.setStatus(-1);
+        }
+        return ret;
+    }
+
+    public boolean itemBelongToRestaurant(int itemId, List<Item> items) {
+
+        for (Item item : items) {
+            if (itemId == item.getId())
+                return true;
+        }
+        return false;
     }
 
 }

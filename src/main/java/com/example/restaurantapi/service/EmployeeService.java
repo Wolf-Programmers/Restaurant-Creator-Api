@@ -60,9 +60,15 @@ public class EmployeeService {
 
         employee.setRestaurant(optionalRestaurant.get());
 
+        try {
+            Employee createdEmployee = employeeRepository.save(employee);
+            ret.setValue(CreatedEmployeeDto.of(createdEmployee));
+            ret.setStatus(1);
+        } catch (Exception ex) {
+            ret.setMessage("Err. add employee" + ex.getMessage());
+            ret.setStatus(-1);
+        }
 
-        Employee createdEmployee = employeeRepository.save(employee);
-        ret.setValue(CreatedEmployeeDto.of(createdEmployee));
 
         return ret;
     }
@@ -86,9 +92,6 @@ public class EmployeeService {
         ret.setValue(employeeInformationDtoList);
         ret.setStatus(1);
         return ret;
-
-
-
     }
 
     public ServiceReturn getEmployee(int employeeId) {
@@ -127,12 +130,16 @@ public class EmployeeService {
             return ret;
         }
         dto.setEmployeeRestaurantModel(optionalRestaurant.get());
-        Employee employee = employeeRepository.save(Employee.updateEmployee(optionalEmployee.get(), dto));
-        ret.setValue(EmployeeInformationDto.of(employee));
-        ret.setStatus(1);
+        try {
+            Employee employee = employeeRepository.save(Employee.updateEmployee(optionalEmployee.get(), dto));
+            ret.setValue(EmployeeInformationDto.of(employee));
+            ret.setStatus(1);
+        } catch (Exception ex) {
+            ret.setMessage("Err. update employee " + ex.getMessage());
+            ret.setStatus(-1);
+        }
+
 
         return ret;
-
-
     }
 }

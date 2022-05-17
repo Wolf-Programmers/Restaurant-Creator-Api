@@ -76,6 +76,10 @@ public class UserController {
         return userService.updateUser(dto);
     }
 
+    @DeleteMapping("/delete")
+    public ServiceReturn deleteUser(@RequestParam("userId") int userId) {
+        return userService.deleteUser(userId);
+    }
 
 
 }

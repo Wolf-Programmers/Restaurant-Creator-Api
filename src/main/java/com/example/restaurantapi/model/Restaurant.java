@@ -2,6 +2,7 @@ package com.example.restaurantapi.model;
 
 import com.example.restaurantapi.dto.restaurant.AddRestaurantDto;
 import com.example.restaurantapi.dto.restaurant.InfoRestaurantDto;
+import com.example.restaurantapi.dto.restaurant.UpdateRestaurantDto;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
@@ -46,8 +47,7 @@ public class Restaurant {
     @OneToMany(mappedBy = "restaurant_menu")
     private List<Menu> menus;
 
-    @OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY)
     private List<Item> items;
 
     @OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -80,6 +80,19 @@ public class Restaurant {
 
     public static Restaurant of(InfoRestaurantDto dto) {
         Restaurant restaurant = new Restaurant();
+
+        restaurant.setName(dto.getName());
+        restaurant.setPhoneNumber(dto.getPhoneNumber());
+        restaurant.setEmail(dto.getEmail());
+        restaurant.setCity(dto.getCity());
+        restaurant.setAddress(dto.getAddress());
+        restaurant.setVoivodeship(dto.getVoivodeship());
+
+        return restaurant;
+    }
+
+    public static Restaurant updateRestaurant(Restaurant restaurant, UpdateRestaurantDto dto) {
+
 
         restaurant.setName(dto.getName());
         restaurant.setPhoneNumber(dto.getPhoneNumber());

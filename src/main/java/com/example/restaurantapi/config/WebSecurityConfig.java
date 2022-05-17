@@ -26,6 +26,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //                .antMatchers(HttpMethod.GET,"/user/*").permitAll()
                 .antMatchers(HttpMethod.GET,"/*").permitAll()
                 .antMatchers(HttpMethod.POST,"/*").permitAll()
+                .antMatchers(HttpMethod.DELETE,"/*").permitAll()
+                .antMatchers(HttpMethod.PUT,"/*").permitAll()
                 // budowanie formularza logowania
                 .and()
                 .csrf().disable(); //przypisujemy uprwanienia do /api z metoda get

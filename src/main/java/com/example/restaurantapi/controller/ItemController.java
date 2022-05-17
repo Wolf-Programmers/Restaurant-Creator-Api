@@ -1,6 +1,7 @@
 package com.example.restaurantapi.controller;
 
 import com.example.restaurantapi.dto.item.CreateItemDto;
+import com.example.restaurantapi.dto.item.UpdateItemDto;
 import com.example.restaurantapi.service.ItemService;
 import com.example.restaurantapi.service.ServiceReturn;
 import lombok.RequiredArgsConstructor;
@@ -43,5 +44,13 @@ public class ItemController {
         return itemService.findItemsByTypeInRestaurant(itemType, restaurantId);
     }
 
+    @PutMapping("/update")
+    public ServiceReturn updateItem(@RequestBody UpdateItemDto dto) {
+        return itemService.updateItem(dto);
+    }
 
+    @DeleteMapping("/delete")
+    public ServiceReturn deleteItem(@RequestParam("itemId") int itemId, @RequestParam("restaurantId") int resturantId) {
+        return itemService.deleteItem(itemId,resturantId);
+    }
 }

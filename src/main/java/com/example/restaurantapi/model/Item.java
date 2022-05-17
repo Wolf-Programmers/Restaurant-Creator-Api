@@ -1,6 +1,7 @@
 package com.example.restaurantapi.model;
 
 import com.example.restaurantapi.dto.item.CreateItemDto;
+import com.example.restaurantapi.dto.item.UpdateItemDto;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -61,6 +62,19 @@ public class Item {
 
         return item;
 
+    }
+
+    public static Item updateItem(Item item, UpdateItemDto dto) {
+
+
+        item.setTitle(dto.getTitle());
+        item.setItem_describe(dto.getDesc());
+        item.setQuantity(dto.getQuantity());
+        item.setPrice(dto.getPrice());
+        item.setUnit(dto.getUnit());
+        item.setRestaurant(dto.getRestaurant());
+
+        return item;
     }
 
 }

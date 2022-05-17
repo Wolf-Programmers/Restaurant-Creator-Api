@@ -50,4 +50,9 @@ public class RestaurantController {
         return restaurantService.getResturantsByOwner(ownerId);
     }
 
+    @DeleteMapping("/delete")
+    public ServiceReturn deleteRestaurant(@RequestParam("restaurantId") int restaurantId) {
+        return restaurantService.deleteRestaurant(restaurantId);
+    }
+
 }

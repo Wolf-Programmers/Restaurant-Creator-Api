@@ -27,8 +27,6 @@ import java.util.*;
 @AllArgsConstructor
 public class UserService implements UserDetailsService {
 
-
-
     private final UserRepository userRepository;
     private final ValidationService validationService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -63,13 +61,21 @@ public class UserService implements UserDetailsService {
             user.setPassword(encryptedPassword);
             final User createdUser = userRepository.save(user);
             final ConfirmationToken confirmationToken = new ConfirmationToken(createdUser);
-            confirmationTokenService.saveConfirmationToken(confirmationToken);
+            try {
+                confirmationTokenService.saveConfirmationToken(confirmationToken);
+
+            } catch (Exception ex) {
+                ret.setStatus(-1);
+                ret.setMessage("Err. save confirmation token: " + ex.getMessage());
+                return ret;
+            }
+
 
 //                sendConfirmationToken(user.getEmail(), confirmationToken.getConfirmationToken());
 
             ret.setStatus(1);
             ret.setErrorList(null);
-            ret.setValue((Object) createdUser);
+            ret.setValue(createdUser);
 
         } else {
 
@@ -307,10 +313,15 @@ public class UserService implements UserDetailsService {
         User user = confirmationTokenOptional.get().getUser();
         final String encryptedPassword = bCryptPasswordEncoder.encode(password);
         user.setPassword(encryptedPassword);
-        userRepository.save(user);
-        confirmationTokenService.deleteForgotPasswordToken(confirmationTokenOptional.get().getId());
-        ret.setStatus(1);
-        ret.setMessage("Hasło pomyślnie zmienione");
+        try {
+            userRepository.save(user);
+            confirmationTokenService.deleteForgotPasswordToken(confirmationTokenOptional.get().getId());
+            ret.setStatus(1);
+            ret.setMessage("Hasło pomyślnie zmienione");
+        } catch (Exception ex)  {
+            ret.setMessage("Err. change password " + ex.getMessage());
+        }
+
         return ret;
 
     }
@@ -324,7 +335,12 @@ public class UserService implements UserDetailsService {
         final User user = confirmationToken.getUser();
 
         user.setEnabled(true);
-        userRepository.save(user);
+        try {
+            userRepository.save(user);
+        } catch (Exception ex) {
+
+        }
+
 
         confirmationTokenService.deleteConfirmationToken(confirmationToken.getId());
     }
@@ -351,12 +367,33 @@ public class UserService implements UserDetailsService {
             ret.setStatus(1);
             return  ret;
         } catch (Exception ex) {
-            ret.setMessage(ex.getMessage());
+            ret.setMessage("Err. update user " + ex.getMessage());
             return  ret;
         }
 
 
     }
+
+    public ServiceReturn deleteUser(int userId) {
+        ServiceReturn ret = new ServiceReturn();
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isEmpty()) {
+            ret.setMessage("Nie znaleziono takiego użytkownika");
+            ret.setStatus(0);
+            return ret;
+        }
+
+        try {
+            userRepository.deleteById(userId);
+            ret.setStatus(1);
+            ret.setMessage("Pomyslnie usunięto użytkownika");
+        } catch (Exception ex) {
+            ret.setStatus(-1);
+            ret.setMessage("Err. delete user " + ex.getMessage());
+        }
+        return ret;
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return null;

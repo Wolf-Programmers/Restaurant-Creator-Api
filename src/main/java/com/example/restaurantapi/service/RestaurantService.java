@@ -6,6 +6,7 @@ import com.example.restaurantapi.biznesobject.RestaurantTypes;
 import com.example.restaurantapi.dto.restaurant.AddRestaurantDto;
 import com.example.restaurantapi.dto.restaurant.CreatedRestaurantDto;
 import com.example.restaurantapi.dto.restaurant.InfoRestaurantDto;
+import com.example.restaurantapi.dto.restaurant.UpdateRestaurantDto;
 import com.example.restaurantapi.model.*;
 import com.example.restaurantapi.repository.*;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,7 @@ public class RestaurantService {
     private final EmailService emailService;
     private Map<String, String> validationResult = new HashMap<>();
 
+    //TODO update restaurant
     /**
      * Function for saving new restaurnt in database
      * @author Szymon Królik
@@ -43,6 +45,7 @@ public class RestaurantService {
         List<OpeningTimes> openingTimes;
         List<RestaurantType> restaurantTypes = new ArrayList<>();
         List<RestaurantTypes> createdResTypes = new ArrayList<>();
+        Restaurant createdRestaurant = new Restaurant();
         ServiceReturn ret = new ServiceReturn();
         validationResult.clear();
 
@@ -98,7 +101,13 @@ public class RestaurantService {
         restaurant.setUser_id(optionalUser.get());
         restaurant.setRestaurantTypes(restaurantTypes);
 
-        Restaurant createdRestaurant = restaurantRepository.save(restaurant);
+        try {
+            createdRestaurant = restaurantRepository.save(restaurant);
+        } catch (Exception ex) {
+            ret.setMessage("Err. Tworzenie restauracji: " + ex.getMessage());
+            ret.setStatus(-1);
+        }
+
 
         openingTimes = addRestaurantDto.getOpeningTimes();
 
@@ -106,8 +115,6 @@ public class RestaurantService {
         for (int i = 0; i < openingTimes.size(); i++) {
             OpeningPeriod openingPeriod = OpeningPeriod.of(openingTimes.get(i));
             openingPeriod.setRestaurant(createdRestaurant);
-
-
 
         }
         CreatedRestaurantDto restaurantDto = CreatedRestaurantDto.of(createdRestaurant);
@@ -128,7 +135,6 @@ public class RestaurantService {
 
         return ret;
     }
-
 
     /**
      * Find restaurant by specific id
@@ -331,5 +337,30 @@ public class RestaurantService {
         ret.setValue(restaurantList);
         return ret;
     }
+
+    public ServiceReturn deleteRestaurant(int restaurantId) {
+        ServiceReturn ret = new ServiceReturn();
+
+        Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(restaurantId);
+        if (optionalRestaurant.isEmpty()) {
+            ret.setMessage("Nie znaleziono takiej restauracji");
+            ret.setStatus(0);
+            return ret;
+        }
+
+        try {
+            restaurantRepository.deleteById(restaurantId);
+            ret.setMessage("Pomyślnie usunięto restauracje");
+            ret.setStatus(1);
+        } catch (Exception ex) {
+            ret.setStatus(-1);
+            ret.setMessage("Err. delete restaurant " + ex.getMessage());
+        }
+
+        return ret;
+    }
+
+
+
 
 }
