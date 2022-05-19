@@ -16,7 +16,7 @@ public class OrderService {
 
     public ServiceReturn placeOrder(PlaceOrderDto dto) {
         ServiceReturn ret = new ServiceReturn();
-
+        ret.setMessage("Test");
         return ret;
     }
 }
