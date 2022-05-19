@@ -16,6 +16,8 @@ public class Cupon {
     private String cuponCode;
     @Column(nullable = false)
     private int maxUses;
+    @Column(nullable = false)
+    private double value;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "restaurant_id", nullable = false)
@@ -25,10 +27,11 @@ public class Cupon {
         Cupon cupon = new Cupon();
         cupon.setCuponCode(dto.getCuponCode());
         cupon.setMaxUses(dto.getMaxUse());
+        cupon.setValue(dto.getValue());
         cupon.setRestaurant(dto.getRestaurant());
         return cupon;
     }
-    String elo = "czesc";
+
 
 
 }

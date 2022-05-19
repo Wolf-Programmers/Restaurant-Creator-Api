@@ -1,11 +1,11 @@
 package com.example.restaurantapi.service;
 
 import com.example.restaurantapi.dto.cupon.CreateCuponDto;
-import com.example.restaurantapi.dto.user.RegisterUserDto;
-import com.example.restaurantapi.model.ConfirmationToken;
+import com.example.restaurantapi.dto.cupon.CreatedCuponDto;
 import com.example.restaurantapi.model.Cupon;
-import com.example.restaurantapi.model.User;
+import com.example.restaurantapi.model.Restaurant;
 import com.example.restaurantapi.repository.CuponRepository;
+import com.example.restaurantapi.repository.RestaurantRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +17,7 @@ public class CuponService  {
     private final CuponRepository cuponRepository;
     private Map<String,String> validationResult = new HashMap<String, String>();
     private final ValidationService validationService;
+    private final RestaurantRepository restaurantRepository;
 
     public ServiceReturn createCupon(CreateCuponDto createCuponDto) {
         ServiceReturn ret = new ServiceReturn();
@@ -25,9 +26,11 @@ public class CuponService  {
 
         if (!optionalCupon.isEmpty()) {
             ret.setStatus(-1);
-            ret.setMessage("Taki użytkownik już istnieje");
+            ret.setMessage("Ten kod został już utworzony");
             return ret;
         }
+        Optional<Restaurant> optionalRestasurant = restaurantRepository.findById(createCuponDto.restaurantId);
+        createCuponDto.setRestaurant(optionalRestasurant.get());
 
         validationResult = validationService.addCuponValidation(createCuponDto);
 
@@ -38,11 +41,11 @@ public class CuponService  {
 
             return ret;
         } else {
-            Cupon cupon = Cupon.of(createCuponDto);
+
             try {
-                final Cupon createdCupon = cuponRepository.save(cupon);
+                final Cupon createdCupon = cuponRepository.save(Cupon.of(createCuponDto));
                 ret.setStatus(1);
-                ret.setValue(createdCupon);
+                ret.setValue(CreatedCuponDto.of(createdCupon));
             } catch (Exception ex) {
                 ret.setMessage("Create cupon: " + ex.getMessage());
                 ret.setStatus(-1);

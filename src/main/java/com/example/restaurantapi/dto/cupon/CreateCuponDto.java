@@ -10,6 +10,8 @@ import lombok.Data;
 public class CreateCuponDto {
     private String cuponCode;
     private int maxUse;
+    public int restaurantId;
+    public double value;
     private Restaurant restaurant;
 
     public static CreateCuponDto of (Cupon cupon) {
