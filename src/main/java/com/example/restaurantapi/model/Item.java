@@ -51,6 +51,9 @@ public class Item {
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
 
+    @ManyToMany(mappedBy = "itemList")
+    private List<Order> orderList;
+
     public static Item of(CreateItemDto dto) {
         Item item = new Item();
 

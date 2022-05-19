@@ -6,7 +6,7 @@ import com.example.restaurantapi.service.ServiceReturn;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("/item")
+@RequestMapping("/order")
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin
@@ -17,5 +17,15 @@ public class OrderController {
     @PutMapping("/place-order")
     public ServiceReturn placeOrder(@RequestBody PlaceOrderDto dto) {
         return orderService.placeOrder(dto);
+    }
+
+    @GetMapping("/orders")
+    public ServiceReturn getOrdersRestaurant(@RequestParam("id") int id) {
+        return orderService.getOrdersForRestaurant(id);
+    }
+
+    @GetMapping("/order")
+    public ServiceReturn getOrder(@RequestParam("id") int id) {
+        return orderService.getOrder(id);
     }
 }

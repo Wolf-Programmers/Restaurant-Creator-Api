@@ -24,7 +24,7 @@ public class CuponService  {
         validationResult.clear();
         Optional<Cupon> optionalCupon = cuponRepository.findByCuponCode(createCuponDto.getCuponCode());
 
-        if (!optionalCupon.isEmpty()) {
+        if (optionalCupon.isPresent()) {
             ret.setStatus(-1);
             ret.setMessage("Ten kod został już utworzony");
             return ret;
@@ -52,6 +52,36 @@ public class CuponService  {
             }
 
             return ret;
+        }
+    }
+
+    public  ServiceReturn updateCoupon(String coupon) {
+        ServiceReturn ret = new ServiceReturn();
+        Optional<Cupon> optionalCupon = cuponRepository.findByCuponCode(coupon);
+        if (optionalCupon.isPresent()) {
+            try {
+                Cupon cupon = cuponRepository.save(Cupon.updateCoupon(optionalCupon.get()));
+                if (cupon.getMaxUses() == 0) {
+                    deleteCoupon(cupon);
+                }
+                ret.setValue(cupon.getValue());
+                ret.setStatus(1);
+            } catch (Exception ex) {
+                ret.setMessage("Err: updateCoupn: " + coupon);
+                ret.setStatus(-1);
+            }
+        } else {
+            ret.setStatus(0);
+            ret.setMessage("Kupon już nie ważny");
+        }
+        return ret;
+    }
+
+    public void deleteCoupon(Cupon cupon) {
+        try {
+            cuponRepository.deleteById(cupon.getId());
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 }

@@ -5,6 +5,7 @@ import com.example.restaurantapi.dto.cupon.CreateCuponDto;
 import com.example.restaurantapi.dto.item.CreateItemDto;
 import com.example.restaurantapi.dto.menu.CreateMenuDto;
 import com.example.restaurantapi.dto.employee.AddEmployeeDto;
+import com.example.restaurantapi.dto.order.PlaceOrderDto;
 import com.example.restaurantapi.dto.restaurant.AddRestaurantDto;
 import com.example.restaurantapi.dto.restaurant.UpdateRestaurantDto;
 import com.example.restaurantapi.dto.user.RegisterUserDto;
@@ -281,7 +282,8 @@ public class ValidationService {
             if (ServiceFunction.isNull(dto.getCuponCode()))
                 errList.put("cupon", "Proszę podać lub wygenerowac kod kuponu.");
 
-
+            if (dto.getCuponCode().length() < 3)
+                errList.put("cupon", "Kod jest za krótki");
 
             if (ServiceFunction.isNull(dto.getMaxUse()))
                 errList.put("maxUse", "Proszę podać maksymalna liczbę użyć.");
@@ -291,6 +293,28 @@ public class ValidationService {
             errList.put("error", "Obiekt nie może być nullem");
 
         }
+
+        return errList;
+    }
+
+    public Map<String, String> placeOrderValidataion(PlaceOrderDto dto) {
+        errList.clear();
+        if (dto == null)
+            errList.put("Błąd", "Obiekt nie może być null");
+        if (ServiceFunction.isNull(dto.getCustomerName()))
+            errList.put("Imię", "Proszę podać imię");
+        if (ServiceFunction.isNull(dto.getCustomerCity()))
+            errList.put("Miasto", "Proszę podać miasto");
+        if (ServiceFunction.isNull(dto.getCustomerAddress()))
+            errList.put("Adres", "Proszę podać adres");
+        if (ServiceFunction.isNull(dto.getTotalPrice()))
+            errList.put("Cena", "Źle obliczyłeś CENE!");
+        if (ServiceFunction.isNull(dto.getItemsList()))
+            errList.put("Przemdioty", "Nic nie zamówiłeś");
+        if (dto.getItemsList().size() <= 0)
+            errList.put("Przedmioty", "Nic nie zamówiłeś");
+        if (ServiceFunction.isNull(dto.getRestaurantId()))
+            errList.put("Resturacje", "Podać restaucje");
 
         return errList;
     }
