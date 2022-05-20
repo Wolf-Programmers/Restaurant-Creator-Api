@@ -1,6 +1,7 @@
 package com.example.restaurantapi.service;
 
 
+import com.example.restaurantapi.biznesobject.RestaurantTypes;
 import com.example.restaurantapi.dto.cupon.CreateCuponDto;
 import com.example.restaurantapi.dto.item.CreateItemDto;
 import com.example.restaurantapi.dto.menu.CreateMenuDto;
@@ -8,7 +9,9 @@ import com.example.restaurantapi.dto.employee.AddEmployeeDto;
 import com.example.restaurantapi.dto.order.PlaceOrderDto;
 import com.example.restaurantapi.dto.restaurant.AddRestaurantDto;
 import com.example.restaurantapi.dto.restaurant.UpdateRestaurantDto;
+import com.example.restaurantapi.dto.user.LoginUserDto;
 import com.example.restaurantapi.dto.user.RegisterUserDto;
+import com.example.restaurantapi.model.RestaurantType;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -67,6 +70,8 @@ public class ValidationService {
 
     }
 
+
+
     public Map<String, String> restaurantValidation(AddRestaurantDto dto) {
         String email;
         String phoneNumber;
@@ -93,6 +98,16 @@ public class ValidationService {
             }
             if (ServiceFunction.isNull(dto.getOpeningTimes()))
                 errList.put("openingTimes", "Proszę podać godziny otwarcia");
+
+            if (ServiceFunction.isNull(dto.getRestaurantTypesList())) {
+                errList.put("restaurantType", "Proszę podać rodzaj restauracji");
+            } else {
+                List<RestaurantTypes> restaurantTypesList = dto.getRestaurantTypesList();
+                if (restaurantTypesList.size() < 1)
+                    errList.put("restaurantType", "Proszę podać rodzaj restauracji");
+            }
+
+
         } else {
             errList.put("error", "Proszę podać dane restauracji");
 

@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 public class MenuInformation {
@@ -14,12 +15,8 @@ public class MenuInformation {
 
     public static MenuInformation of (Menu menu) {
         MenuInformation dto = new MenuInformation();
-        List<ItemMenuInformation> itemMenuInformations = new ArrayList<>();
-        for (Item item : menu.getMenuItems()) {
-            ItemMenuInformation itemMenuInformation = ItemMenuInformation.of(item);
-            itemMenuInformations.add(itemMenuInformation);
-        }
-        dto.setItemList(itemMenuInformations);
+        dto.setItemList(menu.getMenuItems().stream()
+        .map(x -> ItemMenuInformation.of(x)).collect(Collectors.toList()));
         dto.setName(menu.getName());
 
         return dto;

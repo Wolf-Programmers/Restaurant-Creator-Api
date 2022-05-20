@@ -8,6 +8,7 @@ import lombok.Data;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 public class MenuItemsDto {
@@ -23,14 +24,8 @@ public class MenuItemsDto {
         dto.setRestaurantName(menu.getRestaurant_menu().getName());
         dto.setMenuName(menu.getName());
         dto.setMenuTypeName(menu.getMenuType().getName());
-
-        List<Item> listItems = menu.getMenuItems();
-        for (Item item : listItems) {
-            ItemMenuInformation x = ItemMenuInformation.of(item);
-            items.add(x);
-        }
-
-        dto.setItemsList(items);
+        dto.setItemsList(menu.getMenuItems().stream()
+        .map(x -> ItemMenuInformation.of(x)).collect(Collectors.toList()));
 
         return dto;
     }

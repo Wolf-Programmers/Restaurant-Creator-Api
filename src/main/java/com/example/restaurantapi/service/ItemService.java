@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Author Szymon Królik
@@ -145,13 +146,9 @@ public class ItemService {
             return ret;
         }
 
-        for (Item item : optionalItem) {
-            if (item.getRestaurant().getId() == restaurantId) {
-                CreatedItemDto infoItem = CreatedItemDto.of(item);
-                infoItemList.add(infoItem);
-            }
 
-        }
+        infoItemList = optionalItem.stream().filter(x -> x.getRestaurant().getId() == restaurantId)
+                .map(x -> CreatedItemDto.of(x)).collect(Collectors.toList());
 
         if (infoItemList.size() == 0) {
             ret.setMessage("Nie znaleziono żadnych dań w podanej restauracji");
@@ -185,12 +182,9 @@ public class ItemService {
             ret.setMessage("Nie znaleziono żadnych posiłków");
             return ret;
         }
-        for (Item item : itemsList) {
-            if (restaurantId == item.getRestaurant().getId()) {
-                CreatedItemDto infoItem = CreatedItemDto.of(item);
-                itemsInfo.add(infoItem);
-            }
-        }
+
+        itemsInfo = itemsList.stream().filter(x -> x.getRestaurant().getId() == restaurantId)
+                .map(x -> CreatedItemDto.of(x)).collect(Collectors.toList());
 
         ret.setValue(itemsInfo);
         return ret;

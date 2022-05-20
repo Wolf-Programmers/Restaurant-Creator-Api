@@ -1,6 +1,7 @@
 package com.example.restaurantapi.dto.order;
 
 import com.example.restaurantapi.model.Item;
+import com.example.restaurantapi.model.OrderStatus;
 import com.example.restaurantapi.model.Restaurant;
 import lombok.Data;
 
@@ -17,4 +18,5 @@ public class PlaceOrderDto {
     public List<Item> itemsListModel;
     public int restaurantId;
     public Restaurant restaurant;
+    public OrderStatus orderStatus;
 }

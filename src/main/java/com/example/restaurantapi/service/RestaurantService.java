@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Author Szymon Królik
@@ -122,10 +123,8 @@ public class RestaurantService {
 
         //Get restaurant types to return
         List<RestaurantType> getCreatedRestaurantType = createdRestaurant.getRestaurantTypes();
-        for (RestaurantType restaurantType : getCreatedRestaurantType) {
-            RestaurantTypes type = RestaurantTypes.of(restaurantType);
-            createdResTypes.add(type);
-        }
+        createdResTypes = getCreatedRestaurantType.stream().map(x -> RestaurantTypes.of(x)).collect(Collectors.toList());
+
         //Set restaurant types
         restaurantDto.setRestaurantTypes(createdResTypes);
 
@@ -159,29 +158,20 @@ public class RestaurantService {
         InfoRestaurantDto infoRestaurantDto = InfoRestaurantDto.of(optionalRestaurant.get());
         //get menu list
         List<Menu> menus = optionalRestaurant.get().getMenus();
-        for (Menu menu : menus) {
-            MenuInformation menuInformation = MenuInformation.of(menu);
-            menuInformationList.add(menuInformation);
-        }
+        menuInformationList = menus.stream().map(x -> MenuInformation.of(x)).collect(Collectors.toList());
         infoRestaurantDto.setMenus(menuInformationList);
 
         //Get opening hours
         List<OpeningPeriod> openingPeriodList = openingPeriodRepository.findByRestaurant(optionalRestaurant.get());
         if (openingPeriodList.isEmpty() ){
-            for (OpeningPeriod openingPeriods : openingPeriodList) {
-                OpeningTimes openingTimes = OpeningTimes.of(openingPeriods);
-                openingTimesList.add(openingTimes);
-
-            }
+            openingTimesList = openingPeriodList.stream().map(x -> OpeningTimes.of(x)).collect(Collectors.toList());
             infoRestaurantDto.setOpeningPeriod(openingTimesList);
         }
 
         //Get restaurant types
         List<RestaurantType> getRestaurantTypeList = optionalRestaurant.get().getRestaurantTypes();
-        for (RestaurantType type : getRestaurantTypeList) {
-            RestaurantTypes restaurantTypes = RestaurantTypes.of(type);
-            restaurantTypesList.add(restaurantTypes);
-        }
+        restaurantTypesList = getRestaurantTypeList.stream().map(x -> RestaurantTypes.of(x)).collect(Collectors.toList());
+
 
 
         infoRestaurantDto.setRestaurantTypes(restaurantTypesList);
@@ -217,26 +207,19 @@ public class RestaurantService {
            List<RestaurantTypes> restaurantTypesList = new ArrayList<>();
            //Get menu list
            List<Menu> menus = res.getMenus();
-           for (Menu menu: menus) {
-               MenuInformation menuInformation = MenuInformation.of(menu);
-               menuInformationList.add(menuInformation);
-           }
+
+           menuInformationList = menus.stream().map(x -> MenuInformation.of(x)).collect(Collectors.toList());
            dto.setMenus(menuInformationList);
 
            List<OpeningPeriod> openingPeriodList = openingPeriodRepository.findByRestaurant(res);
            if (openingPeriodList.isEmpty()) {
-               for (OpeningPeriod openingPeriod : openingPeriodList) {
-                   OpeningTimes openingTimes = OpeningTimes.of(openingPeriod);
-                   openingTimesList.add(openingTimes);
-               }
+               openingTimesList = openingPeriodList.stream().map(x -> OpeningTimes.of(x)).collect(Collectors.toList());
                dto.setOpeningPeriod(openingTimesList);
            }
 
            List<RestaurantType> getRestaurantTypeList = res.getRestaurantTypes();
-           for (RestaurantType type : getRestaurantTypeList) {
-               RestaurantTypes restaurantTypes = RestaurantTypes.of(type);
-               restaurantTypesList.add(restaurantTypes);
-           }
+
+           restaurantTypesList = getRestaurantTypeList.stream().map(x -> RestaurantTypes.of(x)).collect(Collectors.toList());
            dto.setRestaurantTypes(restaurantTypesList);
 
            infoRestaurantDtoList.add(dto);
@@ -271,26 +254,17 @@ public class RestaurantService {
             List<RestaurantTypes> restaurantTypesList = new ArrayList<>();
             //Get menu list
             List<Menu> menus = res.getMenus();
-            for (Menu menu: menus) {
-                MenuInformation menuInformation = MenuInformation.of(menu);
-                menuInformationList.add(menuInformation);
-            }
+            menuInformationList = menus.stream().map(x -> MenuInformation.of(x)).collect(Collectors.toList());
             dto.setMenus(menuInformationList);
 
             List<OpeningPeriod> openingPeriodList = openingPeriodRepository.findByRestaurant(res);
             if (openingPeriodList.isEmpty()) {
-                for (OpeningPeriod openingPeriod : openingPeriodList) {
-                    OpeningTimes openingTimes = OpeningTimes.of(openingPeriod);
-                    openingTimesList.add(openingTimes);
-                }
+                openingTimesList = openingPeriodList.stream().map(x -> OpeningTimes.of(x)).collect(Collectors.toList());
                 dto.setOpeningPeriod(openingTimesList);
             }
 
             List<RestaurantType> getRestaurantTypeList = res.getRestaurantTypes();
-            for (RestaurantType type : getRestaurantTypeList) {
-                RestaurantTypes restaurantTypes = RestaurantTypes.of(type);
-                restaurantTypesList.add(restaurantTypes);
-            }
+            restaurantTypesList = getRestaurantTypeList.stream().map(x -> RestaurantTypes.of(x)).collect(Collectors.toList());
             dto.setRestaurantTypes(restaurantTypesList);
 
             infoRestaurantDtoList.add(dto);
@@ -311,9 +285,8 @@ public class RestaurantService {
         ServiceReturn ret = new ServiceReturn();
         List<RestaurantType> restaurantTypesList = restaurantTypeRepository.findAll();
         List<RestaurantTypes> restaurantTypes = new ArrayList<>();
-        for (RestaurantType restaurantType : restaurantTypesList) {
-            restaurantTypes.add(RestaurantTypes.of(restaurantType));
-        }
+
+        restaurantTypes = restaurantTypesList.stream().map(x -> RestaurantTypes.of(x)).collect(Collectors.toList());
         ret.setValue(restaurantTypes);
         return ret;
     }
@@ -328,10 +301,7 @@ public class RestaurantService {
             return ret;
         } else {
             List<Restaurant> restaurants = optionalUser.get().getRestaurants();
-            for (Restaurant restaurant : restaurants) {
-                InfoRestaurantDto dto = InfoRestaurantDto.of(restaurant);
-                restaurantList.add(dto);
-            }
+            restaurantList = restaurants.stream().map(x -> InfoRestaurantDto.of(x)).collect(Collectors.toList());
         }
 
         ret.setValue(restaurantList);

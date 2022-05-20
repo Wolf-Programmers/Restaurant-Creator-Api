@@ -6,7 +6,6 @@ import com.example.restaurantapi.model.User;
 import com.example.restaurantapi.repository.ConfirmationTokenRepository;
 import com.example.restaurantapi.repository.UserRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,10 +13,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.sql.rowset.serial.SerialClob;
-import javax.swing.text.html.Option;
 import java.util.*;
 
 /**
@@ -46,10 +41,18 @@ public class UserService implements UserDetailsService {
         ServiceReturn ret = new ServiceReturn();
         validationResult.clear();
         Optional<User> optionalUser = userRepository.findByEmail(registerUserDto.getEmail());
+        Optional<User> optionalUser1 = userRepository.findByPhoneNumber(registerUserDto.getPhone_number());
+        if (optionalUser.isPresent() || optionalUser1.isPresent()) {
+            ret.setStatus(0);
+            validationResult.put("Uzytkownik", "Użytkownik o podanym numerze lub email już istnieje");
+            ret.setErrorList(validationResult);
+            ret.setValue(registerUserDto);
+            return ret;
+        }
         if (optionalUser.isEmpty()) {
             validationResult = validationService.registerValidation(registerUserDto);
             if (validationResult.size() > 0) {
-                ret.setStatus(-1);
+                ret.setStatus(0);
                 ret.setErrorList(validationResult);
                 ret.setValue(registerUserDto);
 
@@ -99,7 +102,7 @@ public class UserService implements UserDetailsService {
         ServiceReturn ret = new ServiceReturn();
         String password = "";
         String login = "";
-        Optional<User> userOptional = Optional.empty();;
+        Optional<User> userOptional;
         validationResult.clear();
 
         if (!ServiceFunction.isNull(loginUserDto.getPassword())) {
@@ -121,7 +124,7 @@ public class UserService implements UserDetailsService {
         if (validationResult.size() > 0) {
             ret.setStatus(0);
             ret.setErrorList(validationResult);
-            ret.setValue((Object) loginUserDto);
+            ret.setValue( loginUserDto);
             return ret;
         }
 
@@ -151,6 +154,7 @@ public class UserService implements UserDetailsService {
             loginUserDto.setPassword(null);
             ret.setValue(loginUserDto);
             validationResult.put("password", "Proszę wprowadzić poprawne hasło");
+            ret.setErrorList(validationResult);
         }
 
 
@@ -235,15 +239,15 @@ public class UserService implements UserDetailsService {
         if (userOptional.isEmpty()) {
             userOptional = userRepository.findByPhoneNumber(dto.getLogin());
             if (userOptional.isPresent()) {
-                ret[0] = (Object)true;
-                ret[1] = (Object)userOptional;
+                ret[0] = true;
+                ret[1] = userOptional;
             } else {
-                ret[0] = (Object)false;
-                ret[1] = (Object)null;
+                ret[0] = false;
+                ret[1] = null;
             }
         } else {
-            ret[0] = (Object)true;
-            ret[1] = (Object)userOptional;
+            ret[0] = true;
+            ret[1] = userOptional;
         }
         return ret;
     }

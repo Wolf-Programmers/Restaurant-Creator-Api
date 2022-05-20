@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Author Szymon Królik
@@ -178,11 +179,8 @@ public class MenuService {
             return ret;
         }
         List<Menu> menuList = optionalRestaurant.get().getMenus();
-        List<MenuItemsDto> menus = new ArrayList<>();
-        for (Menu menu : menuList) {
-            MenuItemsDto dto = MenuItemsDto.of(menu);
-            menus.add(dto);
-        }
+        List<MenuItemsDto> menus = menuList.stream().map(x -> MenuItemsDto.of(x)).collect(Collectors.toList());
+
 
         ret.setValue(menus);
         ret.setStatus(1);

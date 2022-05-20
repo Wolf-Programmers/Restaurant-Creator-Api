@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 @Data
 public class OrderInformationDto {
+    public int id;
     public String customerName;
     public String customerCity;
     public String customerAddress;
@@ -20,11 +21,12 @@ public class OrderInformationDto {
     public String couponCode;
     public List<ItemMenuInformation> itemsListModel;
     public InfoRestaurantDto restaurant;
+    public String orderStatus;
 
     public static OrderInformationDto of(Order order) {
         OrderInformationDto dto = new OrderInformationDto();
-        List<ItemMenuInformation> itemMenuInformations = new ArrayList<>();
 
+        dto.setId(order.getId());
         dto.setCustomerName(order.getCustomerName());
         dto.setCustomerCity(order.getCustomerCity());
         dto.setCustomerAddress(order.getCustomerAddress());
@@ -33,6 +35,7 @@ public class OrderInformationDto {
         dto.setItemsListModel(order.getItemList().stream()
         .map(x -> ItemMenuInformation.of(x)).collect(Collectors.toList()));
         dto.setRestaurant(InfoRestaurantDto.of(order.getRestaurant()));
+        dto.setOrderStatus(order.getOrderStatus().getName());
 
         return dto;
     }

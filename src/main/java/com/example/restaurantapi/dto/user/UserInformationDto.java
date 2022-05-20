@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 public class UserInformationDto {
@@ -25,11 +26,9 @@ public class UserInformationDto {
         dto.setEmail(user.getEmail());
         dto.setPassword(user.getPassword());
         List<Restaurant> restaurantsList = user.getRestaurants();
-        List<InfoRestaurantDto> tmp = new ArrayList<>();
-        for (Restaurant restaurant : restaurantsList) {
-            tmp.add(InfoRestaurantDto.of(restaurant));
-        }
-        dto.setRestaurantList(tmp);
+        dto.setRestaurantList(user.getRestaurants().stream()
+        .map(x -> InfoRestaurantDto.of(x)).collect(Collectors.toList()));
+
 
         return dto;
     }

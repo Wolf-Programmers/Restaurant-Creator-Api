@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Author Szymon Królik
@@ -83,11 +84,8 @@ public class EmployeeService {
             return ret;
         }
 
-        List<EmployeeInformationDto> employeeInformationDtoList = new ArrayList<>();
-        for (Employee employee : employeeList) {
-            EmployeeInformationDto dto = EmployeeInformationDto.of(employee);
-            employeeInformationDtoList.add(dto);
-        }
+        List<EmployeeInformationDto> employeeInformationDtoList = employeeList.stream()
+                .map(x -> EmployeeInformationDto.of(x)).collect(Collectors.toList());
 
         ret.setValue(employeeInformationDtoList);
         ret.setStatus(1);

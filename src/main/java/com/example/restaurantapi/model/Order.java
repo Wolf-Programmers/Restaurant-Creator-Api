@@ -1,6 +1,7 @@
 package com.example.restaurantapi.model;
 
 import com.example.restaurantapi.dto.order.PlaceOrderDto;
+import com.example.restaurantapi.dto.order.UpdateOrderStatusDto;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -38,6 +39,9 @@ public class Order {
     )
     private List<Item> itemList;
 
+    @ManyToOne
+    private OrderStatus orderStatus;
+
     public static Order of(PlaceOrderDto dto) {
         Order order = new Order();
         order.setCustomerName(dto.getCustomerName());
@@ -48,6 +52,13 @@ public class Order {
         order.setCouponCode(dto.getCouponCode());
         order.setRestaurant(dto.getRestaurant());
         order.setItemList(dto.getItemsListModel());
+        order.setOrderStatus(dto.getOrderStatus());
+
+        return order;
+    }
+
+    public static Order updateOrderStatus(Order order, UpdateOrderStatusDto orderStatus) {
+        order.setOrderStatus(orderStatus.getOrderStatus());
 
         return order;
     }

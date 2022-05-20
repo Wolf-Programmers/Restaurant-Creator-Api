@@ -2,14 +2,9 @@ package com.example.restaurantapi.service;
 
 import com.example.restaurantapi.dto.order.OrderInformationDto;
 import com.example.restaurantapi.dto.order.PlaceOrderDto;
-import com.example.restaurantapi.model.Cupon;
-import com.example.restaurantapi.model.Item;
-import com.example.restaurantapi.model.Order;
-import com.example.restaurantapi.model.Restaurant;
-import com.example.restaurantapi.repository.CuponRepository;
-import com.example.restaurantapi.repository.ItemRepository;
-import com.example.restaurantapi.repository.OrderRepository;
-import com.example.restaurantapi.repository.RestaurantRepository;
+import com.example.restaurantapi.dto.order.UpdateOrderStatusDto;
+import com.example.restaurantapi.model.*;
+import com.example.restaurantapi.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +22,7 @@ public class OrderService {
     private final CuponRepository cuponRepository;
     private final OrderRepository orderRepository;
     private final CuponService cuponService;
+    private final OrderStatusRepository orderStatusRepository;
 
     /**
      * * @author Szymon Królik
@@ -75,7 +71,15 @@ public class OrderService {
             Double discount = (Double) couponUpdateRet.getValue();
             dto.setTotalPrice(dto.getTotalPrice() - discount);
         }
-
+        //Always 1 status
+        Optional<OrderStatus> orderStatus = orderStatusRepository.findById(1);
+        if (orderStatus.isEmpty()) {
+            validationResult.put("Status", "Nie znaleziono takiego statusu w bazie danych");
+            ret.setErrorList(validationResult);
+            ret.setValue(dto);
+            return ret;
+        }
+        dto.setOrderStatus(orderStatus.get());
         try {
             Order order = orderRepository.save(Order.of(dto));
             ret.setValue(OrderInformationDto.of(order));
@@ -106,6 +110,30 @@ public class OrderService {
 
     }
 
+    public ServiceReturn getOrdersForRestaurantByStatus(int restaurantId, int statusId) {
+        ServiceReturn ret = new ServiceReturn();
+        Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(restaurantId);
+        if (optionalRestaurant.isEmpty()) {
+            ret.setMessage("Nie znaleziono takiej restauracji");
+            ret.setStatus(0);
+            return ret;
+        }
+
+        Optional<OrderStatus> orderStatus = orderStatusRepository.findById(statusId);
+        if (orderStatus.isEmpty()) {
+            ret.setMessage("Nie znaleziono takiego statusu zamowienia");
+            ret.setStatus(0);
+            return ret;
+        }
+
+        List<Order> orderList = orderRepository.findAllByRestaurant(optionalRestaurant.get());
+        List<OrderInformationDto> orderInformationDtos = orderList.stream().filter(x -> x.getOrderStatus().getId() == statusId)
+                .map(x -> OrderInformationDto.of(x)).collect(Collectors.toList());
+        ret.setValue(orderInformationDtos);
+        return ret;
+
+    }
+
     public ServiceReturn getOrder(int id) {
         ServiceReturn ret = new ServiceReturn();
         Optional<Order> optionalOrder = orderRepository.findById(id);
@@ -120,6 +148,7 @@ public class OrderService {
         return ret;
 
     }
+
     public ServiceReturn getItems(List<Integer> items) {
         ServiceReturn ret = new ServiceReturn();
         List<Item> itemList = new ArrayList<>();
@@ -138,10 +167,42 @@ public class OrderService {
         return ret;
     }
 
-    /**
-     * @author Szymon Królik
-     * @param coupon
-     * @return Operation status: -1 - problem with update coupon state
-     */
+    public ServiceReturn updateOrderStatus(UpdateOrderStatusDto dto) {
+        ServiceReturn ret = new ServiceReturn();
+        validationResult.clear();
+        Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(dto.getRestaurantId());
+        if (optionalRestaurant.isEmpty()) {
+            validationResult.put("Restaurant", "Nie znaleziono takiej restauracji");
+            ret.setErrorList(validationResult);
+            ret.setValue(dto);
+        }
+
+        Optional<Order> optionalOrder = orderRepository.findById(dto.getOrderId());
+        if (optionalOrder.isEmpty()) {
+            validationResult.put("Order", "Nie znaleziono takiego zamowienia");
+            ret.setErrorList(validationResult);
+            ret.setValue(dto);
+        }
+
+        Optional<OrderStatus> optionalOrderStatus = orderStatusRepository.findById(dto.getStatusId());
+        if (optionalOrderStatus.isEmpty()) {
+            validationResult.put("Status", "Nie znaleziono takiego statusu");
+            ret.setErrorList(validationResult);
+            ret.setValue(dto);
+        }
+        dto.setOrderStatus(optionalOrderStatus.get());
+        try {
+            Order order = orderRepository.save(Order.updateOrderStatus(optionalOrder.get(), dto));
+            ret.setValue(OrderInformationDto.of(order));
+
+        } catch (Exception ex) {
+            ret.setMessage("Err. update status problem " + ex.getMessage());
+
+        }
+
+        return ret;
+    }
+
+
 
 }
