@@ -73,6 +73,8 @@ public class UserService implements UserDetailsService {
                 return ret;
             }
 
+            sendConfirmationToken(user.getEmail(), confirmationToken.getConfirmationToken());
+
 
 //                sendConfirmationToken(user.getEmail(), confirmationToken.getConfirmationToken());
 
@@ -138,11 +140,11 @@ public class UserService implements UserDetailsService {
 
         userOptional =(Optional<User>) userExist[1];
         User user = userOptional.get();
-//        if (!ServiceFunction.enableUser(user)) {
-//            ret.setStatus(0);
-//            ret.setMessage("Proszę najpierw aktywować swoje konto");
-//            return ret;
-//        }
+        if (!ServiceFunction.enableUser(user)) {
+            ret.setStatus(0);
+            ret.setMessage("Proszę najpierw aktywować swoje konto");
+            return ret;
+        }
 
         if (bCryptPasswordEncoder.matches(password,user.getPassword())) {
             LoggeduserDto dto = LoggeduserDto.of(user);
@@ -267,7 +269,6 @@ public class UserService implements UserDetailsService {
         simpleMailMessage.setSubject("Mail confirmation");
         simpleMailMessage.setFrom("<MAIL>");
         simpleMailMessage.setText(mailMessage + activationLink);
-
         emailService.sendEmail(simpleMailMessage);
 
     }
