@@ -49,5 +49,5 @@ jobs:
         with:
           app-name: 'RestaurantCreator'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_CDACF1396ED44B2A8995AB7D973DCCBB }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B2DA2ECB8E2C4197A4B6192EABBC52E0 }}
           package: '*.jar'
