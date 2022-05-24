@@ -20,7 +20,6 @@ public class EmailService {
 
     /**
      * @param mailMessage
-     * send mail to user email
      */
     @Async
     public void sendEmail(SimpleMailMessage mailMessage) {
