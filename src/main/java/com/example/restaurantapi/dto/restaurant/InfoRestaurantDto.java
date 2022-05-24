@@ -14,6 +14,7 @@ import java.util.Set;
 
 @Data
 public class InfoRestaurantDto {
+    private int id;
     private String ownerName;
     private String name;
     private String city;
@@ -27,7 +28,7 @@ public class InfoRestaurantDto {
 
     public static InfoRestaurantDto of (Restaurant restaurant) {
         InfoRestaurantDto dto = new InfoRestaurantDto();
-
+        dto.setId(restaurant.getId());
         dto.setOwnerName(restaurant.getUser_id().getName());
         dto.setName(restaurant.getName());
         dto.setCity(restaurant.getCity());
