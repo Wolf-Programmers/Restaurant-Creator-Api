@@ -8,9 +8,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class RestaurantApiApplicationTests {
 
-    @Test
-    void contextLoads() {
-    }
 
 
 }
