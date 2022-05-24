@@ -23,6 +23,8 @@ stages:
     - task: Docker@2
       displayName: Build an image
       inputs:
+        enableCustomDeployment: true
+        deployemntType: 'webDeploy'
         command: build
         dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
         tags: |
