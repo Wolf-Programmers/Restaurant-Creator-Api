@@ -42,7 +42,7 @@ public class OrderService {
             return ret;
         }
         Optional<Restaurant> restaurantOptional  = restaurantRepository.findById(dto.getRestaurantId());
-        if (restaurantOptional.isEmpty()) {
+        if (!restaurantOptional.isPresent()) {
             ret.setMessage("Nie znaleziono takiej restauracji");
             ret.setStatus(0);
             return ret;
@@ -73,7 +73,7 @@ public class OrderService {
         }
         //Always 1 status
         Optional<OrderStatus> orderStatus = orderStatusRepository.findById(1);
-        if (orderStatus.isEmpty()) {
+        if (!orderStatus.isPresent()) {
             validationResult.put("Status", "Nie znaleziono takiego statusu w bazie danych");
             ret.setErrorList(validationResult);
             ret.setValue(dto);
@@ -96,7 +96,7 @@ public class OrderService {
     public ServiceReturn getOrdersForRestaurant(int id) {
         ServiceReturn ret = new ServiceReturn();
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(id);
-        if (optionalRestaurant.isEmpty()) {
+        if (!optionalRestaurant.isPresent()) {
             ret.setMessage("Nie znaleziono takiej restauracji");
             ret.setStatus(0);
             return ret;
@@ -113,14 +113,14 @@ public class OrderService {
     public ServiceReturn getOrdersForRestaurantByStatus(int restaurantId, int statusId) {
         ServiceReturn ret = new ServiceReturn();
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(restaurantId);
-        if (optionalRestaurant.isEmpty()) {
+        if (!optionalRestaurant.isPresent()) {
             ret.setMessage("Nie znaleziono takiej restauracji");
             ret.setStatus(0);
             return ret;
         }
 
         Optional<OrderStatus> orderStatus = orderStatusRepository.findById(statusId);
-        if (orderStatus.isEmpty()) {
+        if (!orderStatus.isPresent()) {
             ret.setMessage("Nie znaleziono takiego statusu zamowienia");
             ret.setStatus(0);
             return ret;
@@ -137,7 +137,7 @@ public class OrderService {
     public ServiceReturn getOrder(int id) {
         ServiceReturn ret = new ServiceReturn();
         Optional<Order> optionalOrder = orderRepository.findById(id);
-        if (optionalOrder.isEmpty()) {
+        if (!optionalOrder.isPresent()) {
             ret.setMessage("Nie znaleziono takiego zamówienia");
             ret.setValue(0);
             return ret;
@@ -155,7 +155,7 @@ public class OrderService {
 
         for (Integer i : items) {
             Optional<Item> optionalItem = itemRepository.findById(i);
-            if (optionalItem.isEmpty()) {
+            if (!optionalItem.isPresent()) {
                 ret.setStatus(-1);
                 return ret;
             }
@@ -171,21 +171,21 @@ public class OrderService {
         ServiceReturn ret = new ServiceReturn();
         validationResult.clear();
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(dto.getRestaurantId());
-        if (optionalRestaurant.isEmpty()) {
+        if (!optionalRestaurant.isPresent()) {
             validationResult.put("Restaurant", "Nie znaleziono takiej restauracji");
             ret.setErrorList(validationResult);
             ret.setValue(dto);
         }
 
         Optional<Order> optionalOrder = orderRepository.findById(dto.getOrderId());
-        if (optionalOrder.isEmpty()) {
+        if (!optionalOrder.isPresent()) {
             validationResult.put("Order", "Nie znaleziono takiego zamowienia");
             ret.setErrorList(validationResult);
             ret.setValue(dto);
         }
 
         Optional<OrderStatus> optionalOrderStatus = orderStatusRepository.findById(dto.getStatusId());
-        if (optionalOrderStatus.isEmpty()) {
+        if (!optionalOrderStatus.isPresent()) {
             validationResult.put("Status", "Nie znaleziono takiego statusu");
             ret.setErrorList(validationResult);
             ret.setValue(dto);

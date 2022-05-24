@@ -52,7 +52,7 @@ public class RestaurantService {
 
 
         Optional<User> optionalUser = userRepository.findById(addRestaurantDto.getOwner());
-        if (optionalUser.isEmpty()) {
+        if (!optionalUser.isPresent()) {
             ret.setStatus(-1);
             ret.setMessage("Nie znaleziono takiego użytkownika");
 
@@ -89,7 +89,7 @@ public class RestaurantService {
         for (int i = 0; i < addRestaurantDto.getRestaurantTypesList().size(); i++) {
 
             Optional<RestaurantType> restaurantTypeOptional = restaurantTypeRepository.findById(addRestaurantDto.getRestaurantTypesList().get(i).getId());
-            if (restaurantTypeOptional.isEmpty()) {
+            if (!restaurantTypeOptional.isPresent()) {
                 ret.setStatus(0);
                 ret.setMessage("Nie znaleziono takiego typu restauracji");
                 return  ret;
@@ -149,7 +149,7 @@ public class RestaurantService {
         List<MenuInformation> menuInformationList =  new ArrayList<>();
 
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(id);
-        if (optionalRestaurant.isEmpty()) {
+        if (!optionalRestaurant.isPresent()) {
             ret.setStatus(0);
             ret.setMessage("Nie znaleziono takiej restauracji");
             return ret;
@@ -295,7 +295,7 @@ public class RestaurantService {
         ServiceReturn ret = new ServiceReturn();
         Optional<User> optionalUser = userRepository.findById(ownerId);
         List<InfoRestaurantDto> restaurantList = new ArrayList<>();
-        if (optionalUser.isEmpty())  {
+        if (!optionalUser.isPresent())  {
             ret.setMessage("Nie znaleziono takiego użytkownika");
             ret.setStatus(0);
             return ret;
@@ -312,7 +312,7 @@ public class RestaurantService {
         ServiceReturn ret = new ServiceReturn();
 
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(restaurantId);
-        if (optionalRestaurant.isEmpty()) {
+        if (!optionalRestaurant.isPresent()) {
             ret.setMessage("Nie znaleziono takiej restauracji");
             ret.setStatus(0);
             return ret;

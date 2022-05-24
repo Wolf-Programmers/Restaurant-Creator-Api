@@ -49,7 +49,7 @@ public class UserService implements UserDetailsService {
             ret.setValue(registerUserDto);
             return ret;
         }
-        if (optionalUser.isEmpty()) {
+        if (!optionalUser.isPresent()) {
             validationResult = validationService.registerValidation(registerUserDto);
             if (validationResult.size() > 0) {
                 ret.setStatus(0);
@@ -209,7 +209,7 @@ public class UserService implements UserDetailsService {
         }
 
         Optional<User> optionalUser = userRepository.findByEmail(userEmail);
-        if (optionalUser.isEmpty()) {
+        if (!optionalUser.isPresent()) {
             ret.setStatus(-1);
             validationResult.put("error", "Nie znaleziono użytkownika o podanym email");
 
@@ -238,7 +238,7 @@ public class UserService implements UserDetailsService {
         User user = new User();
         Optional<User> userOptional = Optional.empty();
         userOptional = userRepository.findByEmail(dto.getLogin());
-        if (userOptional.isEmpty()) {
+        if (!userOptional.isPresent()) {
             userOptional = userRepository.findByPhoneNumber(dto.getLogin());
             if (userOptional.isPresent()) {
                 ret[0] = true;
@@ -308,7 +308,7 @@ public class UserService implements UserDetailsService {
         }
 
         Optional<ConfirmationToken> confirmationTokenOptional = confirmationTokenRepository.findConfirmationTokenByConfirmationToken(token);
-        if (confirmationTokenOptional.isEmpty()) {
+        if (!confirmationTokenOptional.isPresent()) {
             ret.setStatus(-1);
             validationResult.put("token","nie znaleziono takiego tokenu");
 
@@ -358,7 +358,7 @@ public class UserService implements UserDetailsService {
     public ServiceReturn updateUser(UserInformationDto dto) {
         ServiceReturn ret = new ServiceReturn();
         Optional<User> optionalUser = userRepository.findById(dto.getId());
-        if (optionalUser.isEmpty()) {
+        if (!optionalUser.isPresent()) {
             ret.setMessage("Nie znaleziono takiego użytkownika");
             ret.setStatus(0);
             return ret;
@@ -382,7 +382,7 @@ public class UserService implements UserDetailsService {
     public ServiceReturn deleteUser(int userId) {
         ServiceReturn ret = new ServiceReturn();
         Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isEmpty()) {
+        if (!optionalUser.isPresent()) {
             ret.setMessage("Nie znaleziono takiego użytkownika");
             ret.setStatus(0);
             return ret;

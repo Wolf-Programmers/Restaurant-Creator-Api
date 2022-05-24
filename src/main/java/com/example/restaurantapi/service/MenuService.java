@@ -50,7 +50,7 @@ public class MenuService {
 
 
         Optional<User> userOptional = userRepository.findById(createMenuDto.getCreatorId());
-        if (userOptional.isEmpty()) {
+        if (!userOptional.isPresent()) {
             ret.setStatus(0);
             ret.setMessage("Nie znaleziono takiego użytkownika");
             ret.setValue(createMenuDto);
@@ -60,7 +60,7 @@ public class MenuService {
 
 
         Optional<MenuType> menuTypeOptional = menuTypeRepository.findById(createMenuDto.getMenuTypeId());
-        if (menuTypeOptional.isEmpty()) {
+        if (menuTypeOptional.isPresent()) {
             ret.setStatus(0);
             ret.setMessage("Nie znaleziono takiego rodzaju menu");
             ret.setValue(createMenuDto);
@@ -70,7 +70,7 @@ public class MenuService {
 
 
         Optional<Restaurant> restaurantOptional = restaurantRepository.findById(createMenuDto.getRestaurantId());
-        if (restaurantOptional.isEmpty()) {
+        if (!restaurantOptional.isPresent()) {
             ret.setStatus(0);
             ret.setMessage("Nie znaleziono takiej restauracji");
             ret.setValue(createMenuDto);
@@ -108,21 +108,21 @@ public class MenuService {
 
         //Find restaurant
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(addItemToMenuDto.getRestaurantId());
-        if (optionalRestaurant.isEmpty()) {
+        if (!optionalRestaurant.isPresent()) {
             ret.setMessage("NIe znaleziono takiej restauracji");
             return ret;
         }
 
         //Find item
         Optional<Item> optionalItem = itemRepository.findById(addItemToMenuDto.getItemId());
-        if (optionalItem.isEmpty()) {
+        if (!optionalItem.isPresent()) {
             ret.setMessage("Nie znaleziono takiego przedmiotu");
             return ret;
         }
 
         //Find menu
         Optional<Menu> optionalMenu = menuRepository.findById(addItemToMenuDto.getMenuId());
-        if (optionalMenu.isEmpty()) {
+        if (!optionalMenu.isPresent()) {
             ret.setMessage("Nie znaleziono takiego menu");
             return ret;
         }
@@ -151,14 +151,14 @@ public class MenuService {
 
         //Find restaurant
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(restaurantId);
-        if (optionalRestaurant.isEmpty()) {
+        if (!optionalRestaurant.isPresent()) {
             ret.setMessage("NIe znaleziono takiej restauracji");
             return ret;
         }
 
         //Find menu
         Optional<Menu> optionalMenu = menuRepository.findById(menuId);
-        if (optionalMenu.isEmpty()) {
+        if (!optionalMenu.isPresent()) {
             ret.setMessage("Nie znaleziono takiego menu");
             return ret;
         }
@@ -173,7 +173,7 @@ public class MenuService {
     public ServiceReturn showRestaurantMenus(int restaurantId) {
         ServiceReturn ret = new ServiceReturn();
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(restaurantId);
-        if (optionalRestaurant.isEmpty()) {
+        if (!optionalRestaurant.isPresent()) {
             ret.setMessage("Nie znaleziono takiej restauracji");
             ret.setStatus(0);
             return ret;

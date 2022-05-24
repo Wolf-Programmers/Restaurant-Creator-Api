@@ -42,14 +42,14 @@ public class EmployeeService {
         }
 
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(dto.getRestaurantId());
-        if (optionalRestaurant.isEmpty()) {
+        if (!optionalRestaurant.isPresent()) {
             ret.setMessage("Nie znaleziono takiej restauracji");
             ret.setValue(dto);
             return ret;
         }
 
         Optional<EmployeeRole> optionalEmployeeRole = employeeRoleRepository.findById(dto.getEmployeeRoleId());
-        if (optionalEmployeeRole.isEmpty()) {
+        if (!optionalEmployeeRole.isPresent()) {
             ret.setMessage("Nie znaleziono takiej roli użytkownika w bazie danych");
             ret.setValue(dto);
             return ret;
@@ -95,7 +95,7 @@ public class EmployeeService {
     public ServiceReturn getEmployee(int employeeId) {
         ServiceReturn ret = new ServiceReturn();
         Optional<Employee> employeeOptional = employeeRepository.findById(employeeId);
-        if (employeeOptional.isEmpty()) {
+        if (!employeeOptional.isPresent()) {
             ret.setMessage("Nie znaleziono takiego pracownika");
             ret.setStatus(0);
             return ret;
@@ -109,20 +109,20 @@ public class EmployeeService {
     public ServiceReturn updateEmployee(EmployeeInformationDto dto) {
       ServiceReturn ret = new ServiceReturn();
         Optional<Employee> optionalEmployee = employeeRepository.findById(dto.getId());
-        if (optionalEmployee.isEmpty()) {
+        if (!optionalEmployee.isPresent()) {
             ret.setMessage("Nie znaleziono takiego użytkownika");
             ret.setStatus(0);
             return ret;
         }
         Optional<EmployeeRole> optionalEmployeeRole = employeeRoleRepository.findById(dto.getEmployeeRoleId());
-        if (optionalEmployeeRole.isEmpty()) {
+        if (!optionalEmployeeRole.isPresent()) {
             ret.setMessage("Nie znaleziono takiej roli dla pracownika");
             ret.setStatus(0);
             return ret;
         }
         dto.setEmployeeRoleModel(optionalEmployeeRole.get());
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(dto.getEmployeeRestaurantId());
-        if (optionalRestaurant.isEmpty()) {
+        if (!optionalRestaurant.isPresent()) {
             ret.setMessage("Nie znaleziono takiej restauracji");
             ret.setStatus(0);
             return ret;

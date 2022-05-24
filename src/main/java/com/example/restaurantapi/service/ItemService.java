@@ -57,7 +57,7 @@ public class ItemService {
 
         //get restaurant
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById((createItemDto.getRestaurantId()));
-        if (optionalRestaurant.isEmpty()) {
+        if (!optionalRestaurant.isPresent()) {
             ret.setStatus(0);
             ret.setMessage("Nie znaleziono takiej restauracji");
             return ret;
@@ -65,7 +65,7 @@ public class ItemService {
         item.setRestaurant(optionalRestaurant.get());
         //Get itemType
         Optional<ItemType> optionalItemType = itemTypeRepository.findById(createItemDto.getItemType());
-        if (optionalItemType.isEmpty()) {
+        if (!optionalItemType.isPresent()) {
             ret.setMessage("Nie znaleziono takiego rodzaju posiałku");
             ret.setValue(0);
             return ret;
@@ -100,7 +100,7 @@ public class ItemService {
 
         //Find restaurant
         Optional<Restaurant> restaurantOptional = restaurantRepository.findById(restaurantId);
-        if (restaurantOptional.isEmpty()) {
+        if (!restaurantOptional.isPresent()) {
             ret.setStatus(0);
             ret.setMessage("Nie znaleziono podanej restauracji");
             return ret;
@@ -108,7 +108,7 @@ public class ItemService {
 
         //Find item by id
         Optional<Item> itemOptional = itemRepository.findById(itemId);
-        if (itemOptional.isEmpty()) {
+        if (!itemOptional.isPresent()) {
             ret.setStatus(0);
             ret.setMessage("Nie znaleziono podanego przedmiotu");
             return ret;
@@ -132,7 +132,7 @@ public class ItemService {
 
         //Find restaurant
         Optional<Restaurant> restaurantOptional = restaurantRepository.findById(restaurantId);
-        if (restaurantOptional.isEmpty()) {
+        if (!restaurantOptional.isPresent()) {
             ret.setStatus(0);
             ret.setMessage("Nie znaleziono podanej restauracji");
             return ret;
@@ -171,7 +171,7 @@ public class ItemService {
 
         //Get restaurant
         Optional<Restaurant> restaurantOptional = restaurantRepository.findById(restaurantId);
-        if (restaurantOptional.isEmpty()) {
+        if (!restaurantOptional.isPresent()) {
             ret.setMessage("Nie znaleziono takiej restauracji");
             return ret;
         }
@@ -194,13 +194,13 @@ public class ItemService {
     public ServiceReturn updateItem(UpdateItemDto dto) {
         ServiceReturn ret = new ServiceReturn();
         Optional<Item> optionalItem = itemRepository.findById(dto.getId());
-        if (optionalItem.isEmpty()) {
+        if (!optionalItem.isPresent()) {
             ret.setMessage("Niestety nie znaleziono takiego przedmiotu");
             ret.setStatus(0);
             return ret;
         }
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(dto.getRestaurantId());
-        if (optionalRestaurant.isEmpty()){
+        if (!optionalRestaurant.isPresent()){
             ret.setMessage("Niestety nie znaleziono takiej retauracji");
             ret.setStatus(0);
             return ret;
@@ -214,7 +214,7 @@ public class ItemService {
         dto.setRestaurant(optionalRestaurant.get());
 
         Optional<ItemType> optionalItemType = itemTypeRepository.findById(dto.getItemTypeId());
-        if (optionalItemType.isEmpty()) {
+        if (!optionalItemType.isPresent()) {
             ret.setMessage("Nie znaleziono takiego typu menu");
             ret.setStatus(0);
             return ret;
@@ -237,14 +237,14 @@ public class ItemService {
     public ServiceReturn deleteItem(int itemId, int restaurantId) {
         ServiceReturn ret = new ServiceReturn();
         Optional<Item> optionalItem = itemRepository.findById(itemId);
-        if (optionalItem.isEmpty()) {
+        if (!optionalItem.isPresent()) {
             ret.setMessage("Nie znaleziono takiego przedmiotu");
             ret.setStatus(0);
             return  ret;
         }
 
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(restaurantId);
-        if (optionalRestaurant.isEmpty()) {
+        if (!optionalRestaurant.isPresent()) {
             ret.setMessage("Nie znaleziono takiej restauracji");
             ret.setStatus(0);
             return  ret;
