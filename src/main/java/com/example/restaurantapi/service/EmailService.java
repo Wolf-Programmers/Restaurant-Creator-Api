@@ -17,6 +17,11 @@ public class EmailService {
     private JavaMailSender javaMailSender;
     public boolean finished;
     public EmailService(){};
+
+    /**
+     * @param mailMessage
+     * send mail to useremail
+     */
     @Async
     public void sendEmail(SimpleMailMessage mailMessage) {
         javaMailSender.send(mailMessage);
