@@ -140,11 +140,11 @@ public class UserService implements UserDetailsService {
 
         userOptional =(Optional<User>) userExist[1];
         User user = userOptional.get();
-        if (!ServiceFunction.enableUser(user)) {
-            ret.setStatus(0);
-            ret.setMessage("Proszę najpierw aktywować swoje konto");
-            return ret;
-        }
+//        if (!ServiceFunction.enableUser(user)) {
+//            ret.setStatus(0);
+//            ret.setMessage("Proszę najpierw aktywować swoje konto");
+//            return ret;
+//        }
 
         if (bCryptPasswordEncoder.matches(password,user.getPassword())) {
             LoggeduserDto dto = LoggeduserDto.of(user);

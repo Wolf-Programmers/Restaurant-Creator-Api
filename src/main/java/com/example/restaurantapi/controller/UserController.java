@@ -27,6 +27,10 @@ public class UserController {
     private final ConfirmationTokenRepository confirmationTokenRepository;
 
 
+    @GetMapping("/test")
+    public String test() {
+        return "work";
+    }
     @PostMapping("/register")
     public ServiceReturn registerUser(@RequestBody RegisterUserDto dto) {
         ServiceReturn ret = userService.createUser(dto);
