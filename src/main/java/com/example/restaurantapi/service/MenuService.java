@@ -1,5 +1,6 @@
 package com.example.restaurantapi.service;
 
+import com.example.restaurantapi.biznesobject.MenuInformation;
 import com.example.restaurantapi.dto.menu.AddItemToMenuDto;
 import com.example.restaurantapi.dto.menu.CreateMenuDto;
 import com.example.restaurantapi.dto.menu.CreatedMenuDto;
@@ -186,6 +187,7 @@ public class MenuService {
         ret.setStatus(1);
         return ret;
     }
+
 
 
 
