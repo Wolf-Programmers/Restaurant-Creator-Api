@@ -60,7 +60,7 @@ public class MenuService {
 
 
         Optional<MenuType> menuTypeOptional = menuTypeRepository.findById(createMenuDto.getMenuTypeId());
-        if (menuTypeOptional.isPresent()) {
+        if (!menuTypeOptional.isPresent()) {
             ret.setStatus(0);
             ret.setMessage("Nie znaleziono takiego rodzaju menu");
             ret.setValue(createMenuDto);
