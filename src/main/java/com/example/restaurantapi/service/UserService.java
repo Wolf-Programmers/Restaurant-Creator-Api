@@ -269,7 +269,7 @@ public class UserService implements UserDetailsService {
         simpleMailMessage.setSubject("Mail confirmation");
         simpleMailMessage.setFrom("<MAIL>");
         simpleMailMessage.setText(mailMessage + activationLink);
-        emailService.sendEmail(simpleMailMessage);
+//        emailService.sendEmail(simpleMailMessage);
 
     }
 

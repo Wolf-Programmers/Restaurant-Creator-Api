@@ -113,11 +113,16 @@ public class RestaurantService {
         openingTimes = addRestaurantDto.getOpeningTimes();
 
         //Add opening hours to restaurant
+
         for (int i = 0; i < openingTimes.size(); i++) {
             OpeningPeriod openingPeriod = OpeningPeriod.of(openingTimes.get(i));
             openingPeriod.setRestaurant(createdRestaurant);
 
+            openingPeriodRepository.save(openingPeriod);
+
         }
+
+
         CreatedRestaurantDto restaurantDto = CreatedRestaurantDto.of(createdRestaurant);
         restaurantDto.setOpeningTimes(openingTimes);
 
@@ -163,7 +168,7 @@ public class RestaurantService {
 
         //Get opening hours
         List<OpeningPeriod> openingPeriodList = openingPeriodRepository.findByRestaurant(optionalRestaurant.get());
-        if (openingPeriodList.isEmpty() ){
+        if (!openingPeriodList.isEmpty() ){
             openingTimesList = openingPeriodList.stream().map(x -> OpeningTimes.of(x)).collect(Collectors.toList());
             infoRestaurantDto.setOpeningPeriod(openingTimesList);
         }
