@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -83,5 +84,23 @@ public class CuponService  {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public ServiceReturn getAllCoupons(int restaurantId) {
+        ServiceReturn ret = new ServiceReturn();
+        Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(restaurantId);
+        if (!optionalRestaurant.isPresent()) {
+            ret.setMessage("Nie znaleziono takiej restaureacji");
+            ret.setStatus(0);
+            return ret;
+        }
+
+        List<Cupon> cuponList = cuponRepository.findCuponByRestaurant(optionalRestaurant.get());
+        List<CreatedCuponDto> createdCuponDtos = cuponList.stream().map(x -> CreatedCuponDto.of(x)).collect(Collectors.toList());
+
+
+        ret.setValue(createdCuponDtos);
+        ret.setStatus(1);
+        return ret;
     }
 }

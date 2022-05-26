@@ -23,5 +23,9 @@ public class CuponController {
 
         return ret;
     }
+    @GetMapping("/coupons")
+    public ServiceReturn getAllCoupons(@RequestParam("restaurantId") int restuarantId) {
+        return cuponService.getAllCoupons(restuarantId);
+    }
 
 }
