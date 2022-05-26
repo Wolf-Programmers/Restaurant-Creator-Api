@@ -34,6 +34,7 @@ public class CuponService  {
             return ret;
         }
         Optional<Restaurant> optionalRestasurant = restaurantRepository.findById(createCuponDto.restaurantId);
+        //TODO blad
         createCuponDto.setRestaurant(optionalRestasurant.get());
 
         validationResult = validationService.addCuponValidation(createCuponDto);
@@ -41,7 +42,6 @@ public class CuponService  {
         if (validationResult.size() > 0) {
             ret.setStatus(-1);
             ret.setErrorList(validationResult);
-            ret.setValue(createCuponDto);
 
             return ret;
         } else {
