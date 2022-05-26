@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin
 public class MenuController {
 
+
     private final MenuService menuService;
     @PostMapping("/create")
     public ServiceReturn createMenu(@RequestBody CreateMenuDto createMenuDto) {
@@ -39,6 +40,11 @@ public class MenuController {
     @GetMapping("/show-restaurant-menus")
     public ServiceReturn showRestaurantMenus(@RequestParam("restaurantId") int restaurantId) {
         return menuService.showRestaurantMenus(restaurantId);
+    }
+
+    @GetMapping("/show-menu-by-owner")
+    public ServiceReturn showMenuByOwnerId(@RequestParam("ownerId") int ownerId) {
+        return  menuService.showMenusByOwner(ownerId);
     }
 
 

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin
 public class ItemController {
 
+    //TODO get item by ownerid
     private final ItemService itemService;
 
 
@@ -52,5 +53,10 @@ public class ItemController {
     @DeleteMapping("/delete")
     public ServiceReturn deleteItem(@RequestParam("itemId") int itemId, @RequestParam("restaurantId") int resturantId) {
         return itemService.deleteItem(itemId,resturantId);
+    }
+    @GetMapping("/show-item-by-owner")
+    public ServiceReturn getItemByOwner(@RequestParam("ownerId") int ownerId) {
+
+        return itemService.getItemsByOwner(ownerId);
     }
 }

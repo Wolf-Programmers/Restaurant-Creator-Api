@@ -29,7 +29,7 @@ public class UserController {
 
     @GetMapping("/test")
     public String test() {
-        return "work";
+        return "work!";
     }
     @PostMapping("/register")
     public ServiceReturn registerUser(@RequestBody RegisterUserDto dto) {

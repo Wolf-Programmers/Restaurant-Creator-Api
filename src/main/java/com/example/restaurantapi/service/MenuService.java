@@ -188,6 +188,24 @@ public class MenuService {
         return ret;
     }
 
+    public ServiceReturn showMenusByOwner(int ownerId) {
+        ServiceReturn ret = new ServiceReturn();
+
+        Optional<User> optionalUser = userRepository.findById(ownerId);
+        if (!optionalUser.isPresent()) {
+            ret.setMessage("Nie znaleziono takiego użytkowanika");
+            ret.setStatus(0);
+            return ret;
+        }
+
+       List<Restaurant> restaurantList = optionalUser.get().getRestaurants();
+
+        List<MenuInformation> menuList = restaurantList.stream().map(x -> x.getMenus()).collect(Collectors.toList())
+                .stream().flatMap(List::stream).collect(Collectors.toList())
+                .stream().map(x -> MenuInformation.of(x)).collect(Collectors.toList());
+       ret.setValue(menuList);
+       return ret;
+    }
 
 
 
