@@ -4,8 +4,10 @@ import com.example.restaurantapi.dto.cupon.CreateCuponDto;
 import com.example.restaurantapi.dto.cupon.CreatedCuponDto;
 import com.example.restaurantapi.model.Cupon;
 import com.example.restaurantapi.model.Restaurant;
+import com.example.restaurantapi.model.User;
 import com.example.restaurantapi.repository.CuponRepository;
 import com.example.restaurantapi.repository.RestaurantRepository;
+import com.example.restaurantapi.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,7 @@ public class CuponService  {
     private Map<String,String> validationResult = new HashMap<String, String>();
     private final ValidationService validationService;
     private final RestaurantRepository restaurantRepository;
+    private final UserRepository userRepository;
 
     public ServiceReturn createCupon(CreateCuponDto createCuponDto) {
         ServiceReturn ret = new ServiceReturn();
@@ -86,21 +89,20 @@ public class CuponService  {
         }
     }
 
-    public ServiceReturn getAllCoupons(int restaurantId) {
+    public ServiceReturn getAllCoupons(int userId) {
         ServiceReturn ret = new ServiceReturn();
-        Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(restaurantId);
-        if (!optionalRestaurant.isPresent()) {
-            ret.setMessage("Nie znaleziono takiej restaureacji");
-            ret.setStatus(0);
-            return ret;
+        Optional<User> optionalUser = userRepository.findById(userId);
+        //TODO if
+
+        List<Restaurant> restaurantList = optionalUser.get().getRestaurants();
+        List<CreatedCuponDto> retCupoon = new ArrayList<>();
+        for (Restaurant res : restaurantList) {
+            List<Cupon> c = cuponRepository.findCuponByRestaurant(res);
+            for (Cupon cupon : c) {
+                retCupoon.add(CreatedCuponDto.of(cupon));
+            }
         }
-
-        List<Cupon> cuponList = cuponRepository.findCuponByRestaurant(optionalRestaurant.get());
-        List<CreatedCuponDto> createdCuponDtos = cuponList.stream().map(x -> CreatedCuponDto.of(x)).collect(Collectors.toList());
-
-
-        ret.setValue(createdCuponDtos);
-        ret.setStatus(1);
+        ret.setValue(retCupoon);
         return ret;
     }
 }
