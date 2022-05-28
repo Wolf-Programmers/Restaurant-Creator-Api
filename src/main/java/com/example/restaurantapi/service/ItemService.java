@@ -1,6 +1,7 @@
 package com.example.restaurantapi.service;
 
 import com.example.restaurantapi.biznesobject.ItemMenuInformation;
+import com.example.restaurantapi.biznesobject.TypeInformation;
 import com.example.restaurantapi.dto.item.CreateItemDto;
 import com.example.restaurantapi.dto.item.CreatedItemDto;
 import com.example.restaurantapi.dto.item.UpdateItemDto;
@@ -295,6 +296,16 @@ public class ItemService {
                 .map(x -> x.getItems().stream().map(y -> ItemMenuInformation.of(y)).collect(Collectors.toList())).flatMap(List::stream).collect(Collectors.toList());
 
         ret.setValue(itemMenuInformationList);
+        return ret;
+    }
+
+    public ServiceReturn getItemTypes() {
+        ServiceReturn ret = new ServiceReturn();
+
+        List<ItemType> itemTypes = itemTypeRepository.findAll() ;
+        List<TypeInformation> typeInformations = itemTypes.stream().map(x -> TypeInformation.of(x)).collect(Collectors.toList());
+        ret.setValue(typeInformations);
+
         return ret;
     }
 

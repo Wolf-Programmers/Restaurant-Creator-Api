@@ -59,4 +59,9 @@ public class ItemController {
 
         return itemService.getItemsByOwner(ownerId);
     }
+
+    @GetMapping("/get-item-types")
+    public ServiceReturn getItemTypes() {
+        return itemService.getItemTypes();
+    }
 }

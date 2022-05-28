@@ -1,6 +1,7 @@
 package com.example.restaurantapi.service;
 
 import com.example.restaurantapi.biznesobject.MenuInformation;
+import com.example.restaurantapi.biznesobject.TypeInformation;
 import com.example.restaurantapi.dto.menu.AddItemToMenuDto;
 import com.example.restaurantapi.dto.menu.CreateMenuDto;
 import com.example.restaurantapi.dto.menu.CreatedMenuDto;
@@ -205,6 +206,15 @@ public class MenuService {
                 .stream().map(x -> MenuInformation.of(x)).collect(Collectors.toList());
        ret.setValue(menuList);
        return ret;
+    }
+
+    public ServiceReturn getMenuTypes() {
+        ServiceReturn ret = new ServiceReturn();
+
+        List<MenuType> menuTypeList = menuTypeRepository.findAll();
+        List<TypeInformation> typeInformations = menuTypeList.stream().map(x -> TypeInformation.of(x)).collect(Collectors.toList());
+        ret.setValue(typeInformations);
+        return ret;
     }
 
 

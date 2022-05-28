@@ -47,6 +47,11 @@ public class MenuController {
         return  menuService.showMenusByOwner(ownerId);
     }
 
+    @GetMapping("/get-menu-types")
+    public ServiceReturn getMenuTypes() {
+        return menuService.getMenuTypes();
+    }
+
 
 
 
