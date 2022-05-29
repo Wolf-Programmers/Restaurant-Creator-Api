@@ -23,7 +23,7 @@ public class ServiceFunction {
     public static boolean isNull(String text) {
         if (text == null)
             return true;
-        return text.equals("") || text.isEmpty() || text.length() == 1;
+        return text.equals("") || text.isEmpty() || text.length() == 0;
     }
 
     public static boolean isNull(Object value) {

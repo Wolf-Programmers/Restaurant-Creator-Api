@@ -28,6 +28,7 @@ public class RestaurantService {
     private final OpeningPeriodRepository openingPeriodRepository;
     private final RestaurantTypeRepository restaurantTypeRepository;
     private final ItemRepository itemRepository;
+    private final VoivodeshipRepository voivodeshipRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ValidationService validationService;
     private final EmailService emailService;
@@ -332,6 +333,14 @@ public class RestaurantService {
             ret.setMessage("Err. delete restaurant " + ex.getMessage());
         }
 
+        return ret;
+    }
+
+    public ServiceReturn getVoivodeships() {
+        ServiceReturn ret = new ServiceReturn();
+        List<Voivodeship> voivodeships = voivodeshipRepository.findAll();
+        ret.setValue(voivodeships);
+        ret.setStatus(1);
         return ret;
     }
 

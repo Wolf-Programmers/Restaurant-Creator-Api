@@ -41,4 +41,9 @@ public class EmployeeController {
     public ServiceReturn updateEmployee(@RequestBody EmployeeInformationDto dto) {
         return employeeService.updateEmployee(dto);
     }
+
+    @GetMapping("/get-roles")
+    public ServiceReturn getRoles() {
+        return employeeService.getRoles();
+    }
 }

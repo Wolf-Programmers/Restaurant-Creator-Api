@@ -140,4 +140,14 @@ public class EmployeeService {
 
         return ret;
     }
+
+    public ServiceReturn getRoles() {
+        ServiceReturn ret = new ServiceReturn();
+        List<EmployeeRole> employeeRoles = employeeRoleRepository.findAll();
+        ret.setValue(employeeRoles);
+        ret.setStatus(1);
+
+        return ret;
+
+    }
 }

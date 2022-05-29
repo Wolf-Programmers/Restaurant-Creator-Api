@@ -1,6 +1,7 @@
 package com.example.restaurantapi.service;
 
 
+import com.example.restaurantapi.biznesobject.OpeningTimes;
 import com.example.restaurantapi.biznesobject.RestaurantTypes;
 import com.example.restaurantapi.dto.cupon.CreateCuponDto;
 import com.example.restaurantapi.dto.item.CreateItemDto;
@@ -9,9 +10,9 @@ import com.example.restaurantapi.dto.employee.AddEmployeeDto;
 import com.example.restaurantapi.dto.order.PlaceOrderDto;
 import com.example.restaurantapi.dto.restaurant.AddRestaurantDto;
 import com.example.restaurantapi.dto.restaurant.UpdateRestaurantDto;
-import com.example.restaurantapi.dto.user.LoginUserDto;
 import com.example.restaurantapi.dto.user.RegisterUserDto;
-import com.example.restaurantapi.model.RestaurantType;
+import com.example.restaurantapi.repository.EmployeeRoleRepository;
+import com.example.restaurantapi.repository.RestaurantRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -21,8 +22,15 @@ import java.util.*;
  */
 @Service
 public class ValidationService {
-
+//TODO walidacja, jednostki z bazy, wojewodztwa z bazy, role pracownika z bazy
     public Map<String, String> errList = new HashMap<String, String>();
+    private final RestaurantRepository restaurantRepository;
+    private final EmployeeRoleRepository employeeRoleRepository;
+
+    public ValidationService(RestaurantRepository restaurantRepository, EmployeeRoleRepository employeeRoleRepository) {
+        this.restaurantRepository = restaurantRepository;
+        this.employeeRoleRepository = employeeRoleRepository;
+    }
 
     public Map<String, String> registerValidation(RegisterUserDto dto) {
         String password = "";
@@ -96,6 +104,10 @@ public class ValidationService {
                 errList.put("phoneNumber", "Proszę podać prawidłowy numer telefonu restarucaji");
 
             }
+            for (OpeningTimes openingTimes : dto.getOpeningTimes()) {
+                if (openingTimes.getFrom().equals("") || openingTimes.getFrom().length() == 0 ||openingTimes.getTo().equals("") || openingTimes.getTo().length() == 0)
+                    errList.put("openingTimes", "Proszę podać godziny otwarcia");
+            }
             if (ServiceFunction.isNull(dto.getOpeningTimes()))
                 errList.put("openingTimes", "Proszę podać godziny otwarcia");
 
@@ -106,6 +118,18 @@ public class ValidationService {
                 if (restaurantTypesList.size() < 1)
                     errList.put("restaurantType", "Proszę podać rodzaj restauracji");
             }
+            if (ServiceFunction.isNull(dto.getAddress()))
+                errList.put("address", "Proszę podać adres restauracji");
+
+            if (ServiceFunction.isNull(dto.getCity()))
+                errList.put("city", "Proszę podać miasto restauracji");
+
+            if (ServiceFunction.isNull(dto.getName()))
+                errList.put("city", "Proszę podać miasto restauracji");
+
+            if (ServiceFunction.isNull(dto.getVoivodeship()))
+                errList.put("voivodeship", "Proszę podać województwo");
+
 
 
         } else {
@@ -203,6 +227,8 @@ public class ValidationService {
             if (ServiceFunction.isNull(dto.getDesc()))
                 errList.put("desc", "Proszę podać opis produktu");
 
+            if (ServiceFunction.isNull(dto.getUnit()))
+                errList.put("unit", "Proszę podać jednostkę");
             if (ServiceFunction.isNull(dto.getQuantity())) {
                 errList.put("quantity", "Proszę podać ilość produktu");
 
@@ -235,8 +261,13 @@ public class ValidationService {
 
     public Map<String, String> addEmployeeValidation(AddEmployeeDto dto) {
         if (!ServiceFunction.isNull(dto)) {
-            if (ServiceFunction.isNull(dto.getRestaurantId()))
+            if (ServiceFunction.isNull(dto.getRestaurantId())) {
                 errList.put("restaurantId", "Proszę podać restauracje");
+            } else {
+                if (!restaurantRepository.findById(dto.getRestaurantId()).isPresent())
+                    errList.put("restaurantId", "Nie znaleziono takiej restauracji");
+            }
+
 
 
             if (ServiceFunction.isNull(dto.getLastName()))
@@ -277,6 +308,13 @@ public class ValidationService {
                 if (dto.getSalary() <= 0.0)
                     errList.put("salary", "Proszę podać poprawne wynagrodzenie");
 
+            }
+
+            if (ServiceFunction.isNull(dto.getEmployeeRoleId())) {
+                errList.put("employeeRoleId", "Proszę podać rolę pracownika");
+            } else {
+                if (!employeeRoleRepository.findById(dto.getEmployeeRoleId()).isPresent())
+                    errList.put("employeeRoleId", "Nie znaleziono takiej roli");
             }
 
 

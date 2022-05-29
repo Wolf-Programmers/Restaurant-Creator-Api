@@ -55,4 +55,9 @@ public class RestaurantController {
         return restaurantService.deleteRestaurant(restaurantId);
     }
 
+    @GetMapping("/get-voivodeship")
+    public ServiceReturn getVoivodeships() {
+        return restaurantService.getVoivodeships();
+    }
+
 }
