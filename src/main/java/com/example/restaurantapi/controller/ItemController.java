@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin
 public class ItemController {
 
-    //TODO get item by ownerid
     private final ItemService itemService;
 
 
@@ -63,5 +62,10 @@ public class ItemController {
     @GetMapping("/get-item-types")
     public ServiceReturn getItemTypes() {
         return itemService.getItemTypes();
+    }
+
+    @GetMapping("/get-units")
+    public ServiceReturn getItemUnits() {
+        return itemService.getItemUnits();
     }
 }

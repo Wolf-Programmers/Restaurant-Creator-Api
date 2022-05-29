@@ -5,14 +5,8 @@ import com.example.restaurantapi.biznesobject.TypeInformation;
 import com.example.restaurantapi.dto.item.CreateItemDto;
 import com.example.restaurantapi.dto.item.CreatedItemDto;
 import com.example.restaurantapi.dto.item.UpdateItemDto;
-import com.example.restaurantapi.model.Item;
-import com.example.restaurantapi.model.ItemType;
-import com.example.restaurantapi.model.Restaurant;
-import com.example.restaurantapi.model.User;
-import com.example.restaurantapi.repository.ItemRepository;
-import com.example.restaurantapi.repository.ItemTypeRepository;
-import com.example.restaurantapi.repository.RestaurantRepository;
-import com.example.restaurantapi.repository.UserRepository;
+import com.example.restaurantapi.model.*;
+import com.example.restaurantapi.repository.*;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,6 +28,7 @@ public class ItemService {
     private final ItemTypeRepository itemTypeRepository;
     private final RestaurantRepository restaurantRepository;
     private final UserRepository userRepository;
+    private final UnitsRepository unitsRepository;
 
     private final ValidationService validationService;
 
@@ -306,6 +301,15 @@ public class ItemService {
         List<TypeInformation> typeInformations = itemTypes.stream().map(x -> TypeInformation.of(x)).collect(Collectors.toList());
         ret.setValue(typeInformations);
 
+        return ret;
+    }
+
+    public ServiceReturn getItemUnits() {
+        ServiceReturn ret = new ServiceReturn();
+        List<Units> units = unitsRepository.findAll();
+
+        ret.setValue(units);
+        ret.setStatus(1);
         return ret;
     }
 

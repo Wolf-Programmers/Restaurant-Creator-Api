@@ -1,6 +1,7 @@
 package com.example.restaurantapi.controller;
 
 import com.example.restaurantapi.dto.restaurant.AddRestaurantDto;
+import com.example.restaurantapi.dto.restaurant.UpdateRestaurantDto;
 import com.example.restaurantapi.service.RestaurantService;
 import com.example.restaurantapi.service.ServiceReturn;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,11 @@ public class RestaurantController {
     @PutMapping("/add")
     public ServiceReturn addRestaurant(@RequestBody AddRestaurantDto dto) throws ParseException {
         return restaurantService.addRestaurantToUserAccount(dto);
+    }
+
+    @PostMapping("/update")
+    public ServiceReturn updateResturant(@RequestBody UpdateRestaurantDto dto) throws ParseException {
+        return restaurantService.updateRestaurant(dto);
     }
 
     @GetMapping("/info")

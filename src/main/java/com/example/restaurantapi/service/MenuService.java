@@ -30,6 +30,7 @@ public class MenuService {
     private final ValidationService validationService;
     private Map<String, String> validationResult = new HashMap<String, String>();
 
+    //TODO bledy jak wszystko jest puste
     /**
      * Create new menu for restaurant
      * @author Szymon Królik

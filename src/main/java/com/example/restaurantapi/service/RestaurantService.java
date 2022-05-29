@@ -34,7 +34,6 @@ public class RestaurantService {
     private final EmailService emailService;
     private Map<String, String> validationResult = new HashMap<>();
 
-    //TODO update restaurant
     /**
      * Function for saving new restaurnt in database
      * @author Szymon Królik
@@ -344,6 +343,77 @@ public class RestaurantService {
         return ret;
     }
 
+    public ServiceReturn updateRestaurant(UpdateRestaurantDto dto) throws ParseException {
+        ServiceReturn ret = new ServiceReturn();
+        validationResult.clear();
+
+        Optional<User> optionalUser = userRepository.findById(dto.getOwnerId());
+        if (!optionalUser.isPresent()) {
+            validationResult.put("ownerId", "Nie znaleziono takiego użytkownika");
+        }
+
+        Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(dto.getRestaurantId());
+        if (!optionalRestaurant.isPresent())
+            validationResult.put("restaurantId","Nie znaleziono takiej restauracji");
+
+        if (!validationResult.isEmpty()) {
+            ret.setErrorList(validationResult);
+            ret.setStatus(0);
+            ret.setValue(dto);
+
+            return ret;
+        }
+
+        validationResult.clear();
+        List<RestaurantType> restaurantTypesList = new ArrayList<>();
+        for (int i = 0; i < restaurantTypesList.size(); i++) {
+            if (!restaurantTypeRepository.findById(restaurantTypesList.get(i).getId()).isPresent()) {
+                ret.setStatus(0);
+                validationResult.put("restaurantTypes","Nie znaleziono takiego typu restauracji");
+                ret.setErrorList(validationResult);
+                return ret;
+
+            }
+            restaurantTypesList.add(restaurantTypeRepository.findById(restaurantTypesList.get(i).getId()).get());
+        }
+
+
+        Restaurant updatedRestaurant = new Restaurant();
+        try {
+             updatedRestaurant = restaurantRepository.save(Restaurant.updateRestaurant(optionalRestaurant.get(), dto));
+        } catch (Exception ex) {
+            ret.setMessage(ex.getMessage());
+            return ret;
+        }
+        List<OpeningTimes> openingTimes = new ArrayList<>();
+        openingTimes = dto.getOpeningPeriod();
+
+        //Add opening hours to restaurant
+
+        for (int i = 0; i < openingTimes.size(); i++) {
+            OpeningPeriod openingPeriod = OpeningPeriod.of(openingTimes.get(i));
+            openingPeriod.setRestaurant(updatedRestaurant);
+
+            openingPeriodRepository.save(openingPeriod);
+
+        }
+
+
+        CreatedRestaurantDto restaurantDto = CreatedRestaurantDto.of(updatedRestaurant);
+        restaurantDto.setOpeningTimes(openingTimes);
+
+        //Get restaurant types to return
+        List<RestaurantTypes> createdResTypes = new ArrayList<>();
+        List<RestaurantType> getCreatedRestaurantType = updatedRestaurant.getRestaurantTypes();
+        createdResTypes = getCreatedRestaurantType.stream().map(x -> RestaurantTypes.of(x)).collect(Collectors.toList());
+
+        //Set restaurant types
+        restaurantDto.setRestaurantTypes(createdResTypes);
+
+        ret.setValue(restaurantDto);
+        ret.setStatus(1);
+        return ret;
+    }
 
 
 
