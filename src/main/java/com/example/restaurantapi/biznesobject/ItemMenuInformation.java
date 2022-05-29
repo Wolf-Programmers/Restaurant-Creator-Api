@@ -8,6 +8,7 @@ import lombok.Data;
  */
 @Data
 public class ItemMenuInformation {
+    public int id;
     public String title;
     public String describe;
     public Double quantity;
@@ -22,6 +23,7 @@ public class ItemMenuInformation {
         dto.setQuantity(item.getQuantity());
         dto.setUnit(item.getUnit());
         dto.setPrice(item.getPrice());
+        dto.setId(item.getId());
 
         return dto;
     }
