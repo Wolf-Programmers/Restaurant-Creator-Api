@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 @Data
 public class MenuInformation {
+    public int menuId;
     public List<ItemMenuInformation> itemList;
     public String name;
 
@@ -18,7 +19,7 @@ public class MenuInformation {
         dto.setItemList(menu.getMenuItems().stream()
         .map(x -> ItemMenuInformation.of(x)).collect(Collectors.toList()));
         dto.setName(menu.getName());
-
+        dto.setMenuId(menu.getId());
         return dto;
     }
 }
