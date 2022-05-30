@@ -132,9 +132,11 @@ public class UserService implements UserDetailsService {
 
 
         Object[] userExist = userExist(loginUserDto);
+        validationResult.clear();
         if (!(Boolean)userExist[0]) {
             ret.setStatus(0);
             validationResult.put("error", "Nie znaleziono takiego użytkownika");
+            ret.setErrorList(validationResult);
             return ret;
         }
 
@@ -145,7 +147,7 @@ public class UserService implements UserDetailsService {
 //            ret.setMessage("Proszę najpierw aktywować swoje konto");
 //            return ret;
 //        }
-
+        validationResult.clear();
         if (bCryptPasswordEncoder.matches(password,user.getPassword())) {
             LoggeduserDto dto = LoggeduserDto.of(user);
             ret.setStatus(1);
