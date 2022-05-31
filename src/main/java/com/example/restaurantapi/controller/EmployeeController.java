@@ -46,4 +46,9 @@ public class EmployeeController {
     public ServiceReturn getRoles() {
         return employeeService.getRoles();
     }
+
+    @GetMapping("/get-employee-by-owner")
+    public ServiceReturn getEmployeeByOwner(@RequestParam("ownerId") int ownerId) {
+        return employeeService.getEmployeeByOwner(ownerId);
+    }
 }

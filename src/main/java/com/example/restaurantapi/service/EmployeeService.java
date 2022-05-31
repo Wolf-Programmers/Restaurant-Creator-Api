@@ -3,13 +3,11 @@ package com.example.restaurantapi.service;
 import com.example.restaurantapi.dto.employee.AddEmployeeDto;
 import com.example.restaurantapi.dto.employee.CreatedEmployeeDto;
 import com.example.restaurantapi.dto.employee.EmployeeInformationDto;
-import com.example.restaurantapi.model.Employee;
-import com.example.restaurantapi.model.EmployeeRole;
-import com.example.restaurantapi.model.Restaurant;
-import com.example.restaurantapi.model.UserRole;
+import com.example.restaurantapi.model.*;
 import com.example.restaurantapi.repository.EmployeeRepository;
 import com.example.restaurantapi.repository.EmployeeRoleRepository;
 import com.example.restaurantapi.repository.RestaurantRepository;
+import com.example.restaurantapi.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,6 +24,7 @@ public class EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final RestaurantRepository restaurantRepository;
     private final EmployeeRoleRepository employeeRoleRepository;
+    private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ValidationService validationService;
     private Map<String, String> validationResult = new HashMap<String, String>();
@@ -149,5 +148,30 @@ public class EmployeeService {
 
         return ret;
 
+    }
+
+    public ServiceReturn getEmployeeByOwner(int ownerId) {
+        ServiceReturn ret = new ServiceReturn();
+        Optional<User> userOptional = userRepository.findById(ownerId);
+        if (!userOptional.isPresent()) {
+            ret.setMessage("Nie znaleziono takiego użytkownika");
+            ret.setStatus(0);
+            return ret;
+        }
+
+        List<Restaurant> restaurantList = userOptional.get().getRestaurants();
+
+        if (restaurantList.size() > 0) {
+            List<Employee> employeeList = restaurantList.stream().map(x -> x.getEmployees()).collect(Collectors.toList())
+                    .stream().flatMap(List::stream).collect(Collectors.toList());
+            List<EmployeeInformationDto> employeeInformationDtoList = employeeList.stream().map(x -> EmployeeInformationDto.of(x)).collect(Collectors.toList());
+            ret.setValue(employeeInformationDtoList);
+            ret.setStatus(1);
+            return ret;
+        } else {
+            ret.setMessage("Uzytkownik nie posiada żadnych resturacji");
+            ret.setStatus(0);
+            return ret;
+        }
     }
 }
