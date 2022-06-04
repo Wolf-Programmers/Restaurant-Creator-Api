@@ -296,6 +296,12 @@ public class RestaurantService {
         return ret;
     }
 
+    /**
+     * Get all resturants by owner
+     * @author Szymon Królik
+     * @param ownerId
+     * @return List<InfoRestaurantDto>
+     */
     public ServiceReturn getResturantsByOwner(int ownerId) {
         ServiceReturn ret = new ServiceReturn();
         Optional<User> optionalUser = userRepository.findById(ownerId);
@@ -313,6 +319,11 @@ public class RestaurantService {
         return ret;
     }
 
+    /**
+     * Delete specific restaurant
+     * @author Szymon Królik
+     * @param restaurantId
+     */
     public ServiceReturn deleteRestaurant(int restaurantId) {
         ServiceReturn ret = new ServiceReturn();
 
@@ -335,6 +346,12 @@ public class RestaurantService {
         return ret;
     }
 
+    /**
+     * Get all voivodeships from db 
+     * @author Szymon Królik
+     * @param ownerId
+     * @return Vovodeship
+     */
     public ServiceReturn getVoivodeships() {
         ServiceReturn ret = new ServiceReturn();
         List<Voivodeship> voivodeships = voivodeshipRepository.findAll();
@@ -343,6 +360,12 @@ public class RestaurantService {
         return ret;
     }
 
+    /**
+     * Update specific restaurant
+     * @author Szymon Królik
+     * @param UpdateRestaurantDto
+     * @return CreatedRestaurantDto
+     */
     public ServiceReturn updateRestaurant(UpdateRestaurantDto dto) throws ParseException {
         ServiceReturn ret = new ServiceReturn();
         validationResult.clear();

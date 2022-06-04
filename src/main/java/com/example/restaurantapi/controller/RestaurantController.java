@@ -20,6 +20,9 @@ public class RestaurantController {
 
     private final RestaurantService restaurantService;
 
+    /**
+     * @return
+     */
     @GetMapping("/get-types")
     public ServiceReturn getResturantTypes() {
         return restaurantService.getRestaurantTypes();

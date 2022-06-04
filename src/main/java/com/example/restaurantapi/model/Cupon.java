@@ -1,6 +1,7 @@
 package com.example.restaurantapi.model;
 
 import com.example.restaurantapi.dto.cupon.CreateCuponDto;
+import com.example.restaurantapi.dto.cupon.UpdateCouponDto;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -34,6 +35,16 @@ public class Cupon {
 
     public static Cupon updateCoupon(Cupon cupon) {
         cupon.setMaxUses(cupon.getMaxUses()-1);
+        return cupon;
+    }
+
+    public static Cupon editCupon(Cupon cupon, UpdateCouponDto dto) {
+        cupon.setMaxUses(dto.getMaxUse());
+        cupon.setCuponCode(dto.getCuponCode());
+        cupon.setRestaurant(dto.getRestaurant());
+        cupon.setValue(dto.getValue());
+        cupon.setMaxUses(dto.getMaxUse());
+
         return cupon;
     }
 

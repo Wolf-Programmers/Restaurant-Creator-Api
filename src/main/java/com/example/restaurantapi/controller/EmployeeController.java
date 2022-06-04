@@ -51,4 +51,9 @@ public class EmployeeController {
     public ServiceReturn getEmployeeByOwner(@RequestParam("ownerId") int ownerId) {
         return employeeService.getEmployeeByOwner(ownerId);
     }
+
+    @DeleteMapping("/delete")
+    public ServiceReturn deleteEmployee(@RequestParam("employeeId") int employeeId) {
+        return employeeService.deleteEmployee(employeeId);
+    }
 }

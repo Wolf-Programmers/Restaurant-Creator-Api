@@ -11,34 +11,38 @@ import com.example.restaurantapi.dto.order.PlaceOrderDto;
 import com.example.restaurantapi.dto.restaurant.AddRestaurantDto;
 import com.example.restaurantapi.dto.restaurant.UpdateRestaurantDto;
 import com.example.restaurantapi.dto.user.RegisterUserDto;
+import com.example.restaurantapi.model.Menu;
 import com.example.restaurantapi.repository.EmployeeRoleRepository;
+import com.example.restaurantapi.repository.MenuRepository;
 import com.example.restaurantapi.repository.RestaurantRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 /**
- * @Author Szymon Królik
+ * @author Szymon Królik
  */
 @Service
 public class ValidationService {
-//TODO walidacja, jednostki z bazy, wojewodztwa z bazy, role pracownika z bazy
-    public Map<String, String> errList = new HashMap<String, String>();
+
+    public Map<String, String> errList = new HashMap<>();
+    private final MenuRepository menuRepository;
     private final RestaurantRepository restaurantRepository;
     private final EmployeeRoleRepository employeeRoleRepository;
 
-    public ValidationService(RestaurantRepository restaurantRepository, EmployeeRoleRepository employeeRoleRepository) {
+    public ValidationService(MenuRepository menuRepository, RestaurantRepository restaurantRepository, EmployeeRoleRepository employeeRoleRepository) {
+        this.menuRepository = menuRepository;
         this.restaurantRepository = restaurantRepository;
         this.employeeRoleRepository = employeeRoleRepository;
     }
 
     public Map<String, String> registerValidation(RegisterUserDto dto) {
-        String password = "";
+        String password;
         String matchingPassword = "";
         String email = "";
         String phoneNumber = "";
 
-        if (!ServiceFunction.isNull((Object) dto)) {
+        if (!ServiceFunction.isNull(dto)) {
             password = dto.getPassword();
             matchingPassword = dto.getMatchingPassword();
             email = dto.getEmail();
@@ -115,7 +119,7 @@ public class ValidationService {
                 errList.put("restaurantType", "Proszę podać rodzaj restauracji");
             } else {
                 List<RestaurantTypes> restaurantTypesList = dto.getRestaurantTypesList();
-                if (restaurantTypesList.size() < 1)
+                if (restaurantTypesList.isEmpty())
                     errList.put("restaurantType", "Proszę podać rodzaj restauracji");
             }
             if (ServiceFunction.isNull(dto.getAddress()))
@@ -174,34 +178,30 @@ public class ValidationService {
         return errList;
     }
 
-    //TODO sprawdzic czy podane menu juz nie istanieje dla restauracji
+
     public Map<String,String> menuValidation(CreateMenuDto dto) {
-        String name;
-        int creatorId;
-        int menuTypeId;
-        int restaurantId;
 
         if (!ServiceFunction.isNull(dto)) {
+            Optional<Menu> optionalMenu = menuRepository.findByName(dto.getName());
+            if (optionalMenu.isPresent()) {
+                errList.put("name", "Menu o takiej nazwie już istnieje");
+            }
             if (!ServiceFunction.isNull(dto.getName())) {
-                name = dto.getName();
             } else {
                 errList.put("name", "Proszę podać nazwę menu");
 
             }
             if (!ServiceFunction.isNull(dto.getCreatorId())) {
-                creatorId = dto.getCreatorId();
             } else {
                 errList.put("menu", "Proszę podać twórcę menu");
 
             }
             if (!ServiceFunction.isNull(dto.getMenuTypeId())) {
-                menuTypeId = dto.getMenuTypeId();
             } else {
                 errList.put("menuType", "Proszę podać rodzaj menu");
 
             }
             if (!ServiceFunction.isNull(dto.getRestaurantId())) {
-                restaurantId = dto.getRestaurantId();
             } else {
                 errList.put("restaurant", "Proszę wybrać restauracje");
 
@@ -354,6 +354,7 @@ public class ValidationService {
         errList.clear();
         if (dto == null)
             errList.put("Błąd", "Obiekt nie może być null");
+        assert dto != null;
         if (ServiceFunction.isNull(dto.getCustomerName()))
             errList.put("Imię", "Proszę podać imię");
         if (ServiceFunction.isNull(dto.getCustomerCity()))
@@ -364,7 +365,7 @@ public class ValidationService {
             errList.put("Cena", "Źle obliczyłeś CENE!");
         if (ServiceFunction.isNull(dto.getItemsList()))
             errList.put("Przemdioty", "Nic nie zamówiłeś");
-        if (dto.getItemsList().size() <= 0)
+        if (dto.getItemsList().isEmpty())
             errList.put("Przedmioty", "Nic nie zamówiłeś");
         if (ServiceFunction.isNull(dto.getRestaurantId()))
             errList.put("Resturacje", "Podać restaucje");

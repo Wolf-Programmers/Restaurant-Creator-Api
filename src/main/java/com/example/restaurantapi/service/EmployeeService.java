@@ -29,6 +29,11 @@ public class EmployeeService {
     private final ValidationService validationService;
     private Map<String, String> validationResult = new HashMap<String, String>();
 
+    /**
+     * @author Szymon Królik
+     * @param dto
+     * @return CreatedEmployeeDto
+     */
     public ServiceReturn addEmployeeToRestaurant(AddEmployeeDto dto) {
         ServiceReturn ret = new ServiceReturn();
         validationResult.clear();
@@ -73,6 +78,12 @@ public class EmployeeService {
         return ret;
     }
 
+    /**
+     * get all employees for specific restaurant
+      *@author Szymon Królik
+     * @param restaurantId
+     * @return List<EmployeeInformationDto>
+     */
     public ServiceReturn getAllEmployeesRestaurant(int restaurantId) {
         ServiceReturn ret = new ServiceReturn();
 
@@ -91,6 +102,12 @@ public class EmployeeService {
         return ret;
     }
 
+    /**
+     * get information about specific employee
+     *@author Szymon Królik
+      * @param employeeId
+     * @return EmployeeInformationDto
+     */
     public ServiceReturn getEmployee(int employeeId) {
         ServiceReturn ret = new ServiceReturn();
         Optional<Employee> employeeOptional = employeeRepository.findById(employeeId);
@@ -105,6 +122,11 @@ public class EmployeeService {
         return ret;
     }
 
+    /**
+     * update employee
+       * @author Szymon Królik
+     * @return EmployeeInformationDto
+     */
     public ServiceReturn updateEmployee(EmployeeInformationDto dto) {
       ServiceReturn ret = new ServiceReturn();
         Optional<Employee> optionalEmployee = employeeRepository.findById(dto.getId());
@@ -140,6 +162,11 @@ public class EmployeeService {
         return ret;
     }
 
+    /**
+     * get all roles for emploee
+     *@author Szymon Królik
+     * @return List<EmployeeRole>
+     */
     public ServiceReturn getRoles() {
         ServiceReturn ret = new ServiceReturn();
         List<EmployeeRole> employeeRoles = employeeRoleRepository.findAll();
@@ -150,6 +177,12 @@ public class EmployeeService {
 
     }
 
+    /**
+     * get all employees for owner
+     *@author Szymon Królik
+      * @param ownerId
+      * @return List<EmployeeInformationDto>
+     */
     public ServiceReturn getEmployeeByOwner(int ownerId) {
         ServiceReturn ret = new ServiceReturn();
         Optional<User> userOptional = userRepository.findById(ownerId);
@@ -173,5 +206,31 @@ public class EmployeeService {
             ret.setStatus(0);
             return ret;
         }
+    }
+
+    /**
+     * delete employee by id
+     *@author Szymon Królik
+     * @param deleteEmployee
+     */
+    public ServiceReturn deleteEmployee(int deleteEmployee) {
+        ServiceReturn ret = new ServiceReturn();
+
+        Optional<Employee> optionalEmployee = employeeRepository.findById(deleteEmployee);
+        if (optionalEmployee.isPresent()) {
+            try {
+                    employeeRepository.delete(optionalEmployee.get());
+                    ret.setStatus(1);
+            } catch (Exception ex) {
+                ret.setMessage(ex.getMessage());
+                ret.setStatus(-1);
+                return  ret;
+            }
+        } else {
+            ret.setMessage("Nie znaleziono takiego pracownika");
+            ret.setStatus(0);
+            return ret;
+        }
+       return ret;
     }
 }

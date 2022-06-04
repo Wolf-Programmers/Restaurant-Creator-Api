@@ -2,6 +2,7 @@ package com.example.restaurantapi.service;
 
 import com.example.restaurantapi.dto.cupon.CreateCuponDto;
 import com.example.restaurantapi.dto.cupon.CreatedCuponDto;
+import com.example.restaurantapi.dto.cupon.UpdateCouponDto;
 import com.example.restaurantapi.model.Cupon;
 import com.example.restaurantapi.model.Restaurant;
 import com.example.restaurantapi.model.User;
@@ -9,6 +10,7 @@ import com.example.restaurantapi.repository.CuponRepository;
 import com.example.restaurantapi.repository.RestaurantRepository;
 import com.example.restaurantapi.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.hibernate.sql.Update;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -23,6 +25,12 @@ public class CuponService  {
     private final RestaurantRepository restaurantRepository;
     private final UserRepository userRepository;
 
+    /**
+     * Create cupon for restaurnat
+     * @author Daniel Leznaik
+     * @param
+     * @return CreatedCuponDto
+     */
     public ServiceReturn createCupon(CreateCuponDto createCuponDto) {
         ServiceReturn ret = new ServiceReturn();
         validationResult.clear();
@@ -58,7 +66,12 @@ public class CuponService  {
             return ret;
         }
     }
-
+    /**
+     * Update specific coupoon
+     * @author Daniel Leznaik
+     * @param coupon code
+     * @return cupon code
+     */
     public  ServiceReturn updateCoupon(String coupon) {
         ServiceReturn ret = new ServiceReturn();
         Optional<Cupon> optionalCupon = cuponRepository.findByCuponCode(coupon);
@@ -66,7 +79,7 @@ public class CuponService  {
             try {
                 Cupon cupon = cuponRepository.save(Cupon.updateCoupon(optionalCupon.get()));
                 if (cupon.getMaxUses() == 0) {
-                    deleteCoupon(cupon);
+                    deleteCoupon(cupon.getId());
                 }
                 ret.setValue(cupon.getValue());
                 ret.setStatus(1);
@@ -81,18 +94,75 @@ public class CuponService  {
         return ret;
     }
 
-    public void deleteCoupon(Cupon cupon) {
-        try {
-            cuponRepository.deleteById(cupon.getId());
-        } catch (Exception ex) {
-            ex.printStackTrace();
+    public ServiceReturn editCoupon(UpdateCouponDto updateCouponDto) {
+        ServiceReturn ret = new ServiceReturn();
+
+        Optional<Cupon> optionalCupon = cuponRepository.findById(updateCouponDto.getId());
+        if (!optionalCupon.isPresent()) {
+            ret.setMessage("Nie znaleziono takiego kuponu");
+            ret.setStatus(0);
+            ret.setValue(updateCouponDto);
+            return ret;
         }
+
+
+        if (!restaurantRepository.findById(updateCouponDto.getRestaurantId()).isPresent()) {
+            ret.setMessage("Nie znaleziono takiej restauracji");
+            ret.setStatus(0);
+            ret.setValue(updateCouponDto);
+            return ret;
+        }
+        updateCouponDto.setRestaurant(restaurantRepository.findById(updateCouponDto.getRestaurantId()).get());
+
+
+        try {
+            Cupon cupon = cuponRepository.save(Cupon.editCupon(optionalCupon.get(), updateCouponDto));
+            ret.setValue(CreatedCuponDto.of(cupon));
+            ret.setStatus(1);
+        } catch (Exception ex) {
+            ret.setStatus(-1);
+            ret.setMessage(ex.getMessage());
+        }
+
+        return ret;
+    }
+    /**
+     * Delete specific coupon
+     * @author Daniel Leznaik
+     * @param
+     */
+    public ServiceReturn deleteCoupon(int couponId) {
+        ServiceReturn ret = new ServiceReturn();
+        if (!cuponRepository.findById(couponId).isPresent()) {
+            ret.setMessage("nie znaleziono takiego kuponu");
+            ret.setStatus(0);
+            return ret;
+        }
+        try {
+            cuponRepository.deleteById(couponId);
+            ret.setMessage("Usunieto kupon o id: " + couponId);
+            ret.setStatus(1);
+        } catch (Exception ex) {
+            ret.setMessage(ex.getMessage());
+            ret.setStatus(-1);
+
+        }
+        return  ret;
     }
 
+    /**
+     * Update specific restaurant
+     * @author Daniel Leznaik
+     * @param userId
+     */
     public ServiceReturn getAllCoupons(int userId) {
         ServiceReturn ret = new ServiceReturn();
         Optional<User> optionalUser = userRepository.findById(userId);
-        //TODO if
+        if (!optionalUser.isPresent()) {
+            ret.setStatus(0);
+            ret.setMessage("Nie znaleziono takiego właściciela");
+            return ret;
+        }
 
         List<Restaurant> restaurantList = optionalUser.get().getRestaurants();
         List<CreatedCuponDto> retCupoon = new ArrayList<>();
