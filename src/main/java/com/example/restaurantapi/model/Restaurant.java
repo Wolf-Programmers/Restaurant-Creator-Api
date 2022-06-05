@@ -44,13 +44,13 @@ public class Restaurant {
     private User user_id;
 
     //Menu id FK
-    @OneToMany(mappedBy = "restaurant_menu")
+    @OneToMany(cascade = CascadeType.REMOVE,mappedBy = "restaurant_menu")
     private List<Menu> menus;
 
-    @OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.REMOVE,mappedBy = "restaurant", fetch = FetchType.LAZY)
     private List<Item> items;
 
-    @OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.REMOVE,mappedBy = "restaurant", fetch = FetchType.LAZY)
     private List<Employee> employees;
 
     @ManyToMany(cascade = {

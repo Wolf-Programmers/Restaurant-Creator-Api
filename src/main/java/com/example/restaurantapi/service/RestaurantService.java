@@ -29,6 +29,7 @@ public class RestaurantService {
     private final RestaurantTypeRepository restaurantTypeRepository;
     private final ItemRepository itemRepository;
     private final VoivodeshipRepository voivodeshipRepository;
+    private final CuponRepository cuponRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ValidationService validationService;
     private final EmailService emailService;
@@ -333,6 +334,7 @@ public class RestaurantService {
             ret.setStatus(0);
             return ret;
         }
+
 
         try {
             restaurantRepository.deleteById(restaurantId);
