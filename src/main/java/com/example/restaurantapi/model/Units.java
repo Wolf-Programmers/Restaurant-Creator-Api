@@ -1,5 +1,6 @@
 package com.example.restaurantapi.model;
 
+import com.example.restaurantapi.service.TableService;
 import lombok.Data;
 
 import javax.persistence.*;

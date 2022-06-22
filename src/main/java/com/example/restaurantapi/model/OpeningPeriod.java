@@ -2,6 +2,7 @@ package com.example.restaurantapi.model;
 
 import com.example.restaurantapi.biznesobject.OpeningTimes;
 import com.example.restaurantapi.service.ServiceFunction;
+import com.example.restaurantapi.service.TableService;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import org.hibernate.annotations.OnDelete;

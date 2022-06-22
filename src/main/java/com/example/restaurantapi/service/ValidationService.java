@@ -9,6 +9,7 @@ import com.example.restaurantapi.dto.menu.CreateMenuDto;
 import com.example.restaurantapi.dto.employee.AddEmployeeDto;
 import com.example.restaurantapi.dto.order.PlaceOrderDto;
 import com.example.restaurantapi.dto.restaurant.AddRestaurantDto;
+import com.example.restaurantapi.dto.restaurant.CreateTableDto;
 import com.example.restaurantapi.dto.restaurant.UpdateRestaurantDto;
 import com.example.restaurantapi.dto.user.RegisterUserDto;
 import com.example.restaurantapi.model.Menu;
@@ -81,8 +82,6 @@ public class ValidationService {
         return errList;
 
     }
-
-
 
     public Map<String, String> restaurantValidation(AddRestaurantDto dto) {
         String email;
@@ -178,7 +177,6 @@ public class ValidationService {
         return errList;
     }
 
-
     public Map<String,String> menuValidation(CreateMenuDto dto) {
 
         if (!ServiceFunction.isNull(dto)) {
@@ -213,7 +211,6 @@ public class ValidationService {
 
         return errList;
     }
-
 
     public Map<String, String> itemValidation(CreateItemDto dto) {
 
@@ -329,21 +326,25 @@ public class ValidationService {
     public Map<String, String> addCuponValidation(CreateCuponDto dto) {
         if (!ServiceFunction.isNull(dto)) {
             if (ServiceFunction.isNull(dto.getRestaurant()))
-                errList.put("restaurant", "Proszę podać restauracje");
+                errList.put("restaurant", "Please select a restaurant id");
 
 
             if (ServiceFunction.isNull(dto.getCuponCode()))
-                errList.put("cupon", "Proszę podać lub wygenerowac kod kuponu.");
+                errList.put("cupon", "Please enter the coupon code");
 
             if (dto.getCuponCode().length() < 3)
-                errList.put("cupon", "Kod jest za krótki");
-
+                errList.put("cupon", "Code is to short");
+            if (ServiceFunction.isNull(dto.getValue())) {
+                errList.put("value", "Please enter the coupon value");
+            } else if (dto.getValue() <= 0.0) {
+                errList.put("value", "Coupon value must be greater than 0");
+            }
             if (ServiceFunction.isNull(dto.getMaxUse()))
-                errList.put("maxUse", "Proszę podać maksymalna liczbę użyć.");
+                errList.put("maxUse", "Please enter the max use");
 
 
         } else {
-            errList.put("error", "Obiekt nie może być nullem");
+            errList.put("error", "Coupon can't be null");
 
         }
 
@@ -369,6 +370,22 @@ public class ValidationService {
             errList.put("Przedmioty", "Nic nie zamówiłeś");
         if (ServiceFunction.isNull(dto.getRestaurantId()))
             errList.put("Resturacje", "Podać restaucje");
+
+        return errList;
+    }
+
+    public Map<String, String> createTableValidation(CreateTableDto dto) {
+        if (dto == null) {
+            errList.put("Object", "Object cannot be null");
+            return errList;
+        }
+
+        if (dto.getRestaurantId() <= 0)
+            errList.put("Restaurant", "Please enter restaurant id");
+        if (dto.getCapacity() <= 0)
+            errList.put("Capacity", "Please enter capacity");
+        if (dto.getNumber().length() < 1)
+            errList.put("Number", "Please enter number");
 
         return errList;
     }

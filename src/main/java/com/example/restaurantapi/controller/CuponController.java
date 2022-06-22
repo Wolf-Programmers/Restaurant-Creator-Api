@@ -20,9 +20,7 @@ public class CuponController {
 
     @PutMapping("/cupon-create")
     public ServiceReturn createCupon(@RequestBody CreateCuponDto dto) {
-        ServiceReturn ret = cuponService.createCupon(dto);
-
-        return ret;
+        return cuponService.createCupon(dto);
     }
     @GetMapping("/coupons")
     public ServiceReturn getAllCoupons(@RequestParam("userId") int userId) {

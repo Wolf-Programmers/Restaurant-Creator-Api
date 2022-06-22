@@ -30,7 +30,7 @@ public class MenuService {
     private final ValidationService validationService;
     private Map<String, String> validationResult = new HashMap<String, String>();
 
-    //TODO bledy jak wszystko jest puste
+
     /**
      * Create new menu for restaurant
      * @author Szymon Królik
@@ -42,57 +42,34 @@ public class MenuService {
         validationResult.clear();
 
         validationResult = validationService.menuValidation(createMenuDto);
-        if (validationResult.size() > 0) {
-            ret.setStatus(0);
-            ret.setErrorList(validationResult);
-            ret.setMessage("Proszę poprawnie uzupełnić dane");
-            ret.setValue(createMenuDto);
-
-            return ret;
-        }
-
+        if (validationResult.size() > 0)
+            return ServiceReturn.returnError("Please enter data",0, validationResult, createMenuDto );
 
         Optional<User> userOptional = userRepository.findById(createMenuDto.getCreatorId());
-        if (!userOptional.isPresent()) {
-            ret.setStatus(0);
-            ret.setMessage("Nie znaleziono takiego użytkownika");
-            ret.setValue(createMenuDto);
+        if (!userOptional.isPresent())
+            return ServiceReturn.returnError("Can't find user with given id", 0, createMenuDto);
 
-            return ret;
-        }
 
 
         Optional<MenuType> menuTypeOptional = menuTypeRepository.findById(createMenuDto.getMenuTypeId());
-        if (!menuTypeOptional.isPresent()) {
-            ret.setStatus(0);
-            ret.setMessage("Nie znaleziono takiego rodzaju menu");
-            ret.setValue(createMenuDto);
+        if (!menuTypeOptional.isPresent())
+            return ServiceReturn.returnError("Can't find menu type with given id", 0, createMenuDto);
 
-            return ret;
-        }
 
 
         Optional<Restaurant> restaurantOptional = restaurantRepository.findById(createMenuDto.getRestaurantId());
-        if (!restaurantOptional.isPresent()) {
-            ret.setStatus(0);
-            ret.setMessage("Nie znaleziono takiej restauracji");
-            ret.setValue(createMenuDto);
-
-            return ret;
-        }
-
+        if (!restaurantOptional.isPresent())
+            return ServiceReturn.returnError("Can't find restaurant with given id", 0, createMenuDto);
 
         createMenuDto.setMenuType(menuTypeOptional.get());
         Menu prepareMenu = Menu.of(createMenuDto);
         prepareMenu.setRestaurant_menu(restaurantOptional.get());
         try {
             Menu createdMenu = menuRepository.save(prepareMenu);
-
             ret.setStatus(1);
             ret.setValue(CreatedMenuDto.of(createdMenu));
         } catch (Exception ex) {
-            ret.setMessage("Err. create menu " + ex.getMessage());
-            ret.setStatus(-1);
+            return ServiceReturn.returnError("Err. create menu " + ex.getMessage(), -1 );
         }
 
 
@@ -111,24 +88,18 @@ public class MenuService {
 
         //Find restaurant
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(addItemToMenuDto.getRestaurantId());
-        if (!optionalRestaurant.isPresent()) {
-            ret.setMessage("NIe znaleziono takiej restauracji");
-            return ret;
-        }
+        if (!optionalRestaurant.isPresent())
+            return ServiceReturn.returnError("Can't find restaurant with given id", 0, addItemToMenuDto.getRestaurantId());
 
         //Find item
         Optional<Item> optionalItem = itemRepository.findById(addItemToMenuDto.getItemId());
-        if (!optionalItem.isPresent()) {
-            ret.setMessage("Nie znaleziono takiego przedmiotu");
-            return ret;
-        }
+        if (!optionalItem.isPresent())
+            return ServiceReturn.returnError("Can't find item with given id", 0, addItemToMenuDto.getItemId());
 
         //Find menu
         Optional<Menu> optionalMenu = menuRepository.findById(addItemToMenuDto.getMenuId());
-        if (!optionalMenu.isPresent()) {
-            ret.setMessage("Nie znaleziono takiego menu");
-            return ret;
-        }
+        if (!optionalMenu.isPresent())
+            return ServiceReturn.returnError("Can't find menu with given id", 0, addItemToMenuDto.getMenuId());
 
         Menu menu = optionalMenu.get();
         itemsList = menu.getMenuItems();
@@ -142,8 +113,7 @@ public class MenuService {
             ret.setValue(retMenu);
             ret.setStatus(1);
         } catch (Exception ex) {
-            ret.setMessage("Err. add item to menu "  + ex.getMessage());
-            ret.setStatus(-1);
+            return ServiceReturn.returnError("Err. add item to menu " + ex.getMessage(), -1 );
         }
 
         return ret;
@@ -154,17 +124,13 @@ public class MenuService {
 
         //Find restaurant
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(restaurantId);
-        if (!optionalRestaurant.isPresent()) {
-            ret.setMessage("NIe znaleziono takiej restauracji");
-            return ret;
-        }
+        if (!optionalRestaurant.isPresent())
+            return ServiceReturn.returnError("Can't find restaurant with given id", 0, restaurantId);
 
         //Find menu
         Optional<Menu> optionalMenu = menuRepository.findById(menuId);
-        if (!optionalMenu.isPresent()) {
-            ret.setMessage("Nie znaleziono takiego menu");
-            return ret;
-        }
+        if (!optionalMenu.isPresent())
+            return ServiceReturn.returnError("Can't find menu with given id", 0, menuId);
 
         MenuItemsDto retMenu = MenuItemsDto.of(optionalMenu.get());
 
@@ -176,11 +142,8 @@ public class MenuService {
     public ServiceReturn showRestaurantMenus(int restaurantId) {
         ServiceReturn ret = new ServiceReturn();
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(restaurantId);
-        if (!optionalRestaurant.isPresent()) {
-            ret.setMessage("Nie znaleziono takiej restauracji");
-            ret.setStatus(0);
-            return ret;
-        }
+        if (!optionalRestaurant.isPresent())
+            return ServiceReturn.returnError("Can't find restaurant with given id", 0, restaurantId);
         List<Menu> menuList = optionalRestaurant.get().getMenus();
         List<MenuItemsDto> menus = menuList.stream().map(x -> MenuItemsDto.of(x)).collect(Collectors.toList());
 
@@ -194,11 +157,8 @@ public class MenuService {
         ServiceReturn ret = new ServiceReturn();
 
         Optional<User> optionalUser = userRepository.findById(ownerId);
-        if (!optionalUser.isPresent()) {
-            ret.setMessage("Nie znaleziono takiego użytkowanika");
-            ret.setStatus(0);
-            return ret;
-        }
+        if (!optionalUser.isPresent())
+            return ServiceReturn.returnError("Can't find user with given id", 0, ownerId);
 
        List<Restaurant> restaurantList = optionalUser.get().getRestaurants();
 

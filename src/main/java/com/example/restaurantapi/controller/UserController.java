@@ -26,11 +26,11 @@ public class UserController {
     private final UserService userService;
     private final ConfirmationTokenRepository confirmationTokenRepository;
 
-
     @GetMapping("/test")
     public String test() {
         return "work!";
     }
+
     @PostMapping("/register")
     public ServiceReturn registerUser(@RequestBody RegisterUserDto dto) {
         ServiceReturn ret = userService.createUser(dto);
@@ -68,11 +68,8 @@ public class UserController {
     }
     @GetMapping("/confirm")
     public String confirmMail(@RequestParam("token") String token) {
-
         Optional<ConfirmationToken> confirmationTokenOptional = confirmationTokenRepository.findConfirmationTokenByConfirmationToken(token);
-
         confirmationTokenOptional.ifPresent(userService::confirmUser);
-
         return "Udało się potwiedzić konto!";
     }
     @PutMapping("/update")

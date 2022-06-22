@@ -2,9 +2,12 @@ package com.example.restaurantapi.model;
 
 import com.example.restaurantapi.dto.order.PlaceOrderDto;
 import com.example.restaurantapi.dto.order.UpdateOrderStatusDto;
+import com.example.restaurantapi.service.TableService;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -24,6 +27,9 @@ public class Order {
     private Double totalPrice;
     @Column(nullable = false)
     private String couponCode;
+    @CreationTimestamp
+    @Column(updatable = false)
+    private Date orderDate;
 
     @OneToOne(targetEntity = Restaurant.class)
     @JoinColumn(nullable = false, name = "restaurant_id")

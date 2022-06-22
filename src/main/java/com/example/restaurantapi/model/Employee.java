@@ -2,6 +2,7 @@ package com.example.restaurantapi.model;
 
 import com.example.restaurantapi.dto.employee.AddEmployeeDto;
 import com.example.restaurantapi.dto.employee.EmployeeInformationDto;
+import com.example.restaurantapi.service.TableService;
 import lombok.Data;
 
 import javax.persistence.*;

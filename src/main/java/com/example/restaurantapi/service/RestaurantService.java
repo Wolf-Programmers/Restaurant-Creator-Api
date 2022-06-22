@@ -33,6 +33,7 @@ public class RestaurantService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ValidationService validationService;
     private final EmailService emailService;
+    private final LogService logService;
     private Map<String, String> validationResult = new HashMap<>();
 
     /**
@@ -53,48 +54,31 @@ public class RestaurantService {
 
 
         Optional<User> optionalUser = userRepository.findById(addRestaurantDto.getOwner());
-        if (!optionalUser.isPresent()) {
-            ret.setStatus(-1);
-            ret.setMessage("Nie znaleziono takiego użytkownika");
-
-            return ret;
-        }
+        if (!optionalUser.isPresent())
+            return ServiceReturn.returnError("Can't find user with given id", addRestaurantDto.getOwner());
 
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findByEmail(addRestaurantDto.getEmail());
         if (optionalRestaurant.isPresent()) {
-            ret.setStatus(-1);
             validationResult.put("email", "Restauracja o podanym email już istnieje");
-            ret.setErrorList(validationResult);
-            ret.setValue(addRestaurantDto);
-            return ret;
+            return ServiceReturn.returnError("Validation error", -1, validationResult,addRestaurantDto);
         }
 
         Optional<Restaurant> optionalRestaurantPhoneNumber = restaurantRepository.findByPhoneNumber(addRestaurantDto.getPhoneNumber());
         if (optionalRestaurantPhoneNumber.isPresent()) {
-            ret.setStatus(-1);
             validationResult.put("email", "Restauracja o podanym numerze telefonu już istnieje");
-            ret.setErrorList(validationResult);
-            ret.setValue(addRestaurantDto);
-            return ret;
+            return ServiceReturn.returnError("Validation error", 0, validationResult,addRestaurantDto);
         }
         validationResult = validationService.restaurantValidation(addRestaurantDto);
         if (validationResult.size() > 0) {
-            ret.setStatus(-1);
-            ret.setErrorList(validationResult);
-            ret.setValue(addRestaurantDto);
-
-            return ret;
+            return ServiceReturn.returnError("Validation error", 0, validationResult,addRestaurantDto);
         }
 
         //Prepare restaurant types
         for (int i = 0; i < addRestaurantDto.getRestaurantTypesList().size(); i++) {
 
             Optional<RestaurantType> restaurantTypeOptional = restaurantTypeRepository.findById(addRestaurantDto.getRestaurantTypesList().get(i).getId());
-            if (!restaurantTypeOptional.isPresent()) {
-                ret.setStatus(0);
-                ret.setMessage("Nie znaleziono takiego typu restauracji");
-                return  ret;
-            }
+            if (!restaurantTypeOptional.isPresent())
+                return ServiceReturn.returnError("Can't find restaurant type with given id", addRestaurantDto.getRestaurantTypesList().get(i).getId());
             restaurantTypes.add(restaurantTypeOptional.get());
         }
 
@@ -105,9 +89,9 @@ public class RestaurantService {
 
         try {
             createdRestaurant = restaurantRepository.save(restaurant);
+            logService.saveInfoLogInDatabase("Created restaurant",optionalUser.get(), 1);
         } catch (Exception ex) {
-            ret.setMessage("Err. Tworzenie restauracji: " + ex.getMessage());
-            ret.setStatus(-1);
+           return ServiceReturn.returnError("Err. create restaurant" + ex.getMessage(), -1);
         }
 
 
@@ -155,11 +139,8 @@ public class RestaurantService {
         List<MenuInformation> menuInformationList =  new ArrayList<>();
 
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(id);
-        if (!optionalRestaurant.isPresent()) {
-            ret.setStatus(0);
-            ret.setMessage("Nie znaleziono takiej restauracji");
-            return ret;
-        }
+        if (!optionalRestaurant.isPresent())
+            return ServiceReturn.returnError("Can't find restaurant with given id", id);
 
         InfoRestaurantDto infoRestaurantDto = InfoRestaurantDto.of(optionalRestaurant.get());
         //get menu list
@@ -201,11 +182,8 @@ public class RestaurantService {
 
 
         List<Restaurant> optionalRestaurant = restaurantRepository.findByNameContaining(name);
-        if (optionalRestaurant.isEmpty()) {
-            ret.setStatus(0);
-            ret.setMessage("Nie znaleziono takiej restauracji");
-            return ret;
-        }
+        if (optionalRestaurant.isEmpty())
+            return ServiceReturn.returnError("Can't find restaurant with given name", 0,name);
        for (Restaurant res : optionalRestaurant) {
            InfoRestaurantDto dto = InfoRestaurantDto.of(res);
            List<MenuInformation> menuInformationList = new ArrayList<>();
@@ -308,9 +286,7 @@ public class RestaurantService {
         Optional<User> optionalUser = userRepository.findById(ownerId);
         List<InfoRestaurantDto> restaurantList = new ArrayList<>();
         if (!optionalUser.isPresent())  {
-            ret.setMessage("Nie znaleziono takiego użytkownika");
-            ret.setStatus(0);
-            return ret;
+            return ServiceReturn.returnError("Can't find user with given id", ownerId);
         } else {
             List<Restaurant> restaurants = optionalUser.get().getRestaurants();
             restaurantList = restaurants.stream().map(x -> InfoRestaurantDto.of(x)).collect(Collectors.toList());
@@ -329,11 +305,8 @@ public class RestaurantService {
         ServiceReturn ret = new ServiceReturn();
 
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(restaurantId);
-        if (!optionalRestaurant.isPresent()) {
-            ret.setMessage("Nie znaleziono takiej restauracji");
-            ret.setStatus(0);
-            return ret;
-        }
+        if (!optionalRestaurant.isPresent())
+            return ServiceReturn.returnError("Can't find restaurant with given id", restaurantId);
 
 
         try {
@@ -341,8 +314,7 @@ public class RestaurantService {
             ret.setMessage("Pomyślnie usunięto restauracje");
             ret.setStatus(1);
         } catch (Exception ex) {
-            ret.setStatus(-1);
-            ret.setMessage("Err. delete restaurant " + ex.getMessage());
+            return ServiceReturn.returnError("Err. delete restaurant " + ex.getMessage(), -1);
         }
 
         return ret;
@@ -373,21 +345,16 @@ public class RestaurantService {
         validationResult.clear();
 
         Optional<User> optionalUser = userRepository.findById(dto.getOwnerId());
-        if (!optionalUser.isPresent()) {
-            validationResult.put("ownerId", "Nie znaleziono takiego użytkownika");
-        }
+        if (!optionalUser.isPresent())
+            validationResult.put("ownerId", "Can't find user with given id");
+
 
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(dto.getRestaurantId());
         if (!optionalRestaurant.isPresent())
-            validationResult.put("restaurantId","Nie znaleziono takiej restauracji");
+            validationResult.put("restaurantId","Can't find restaurant with given id");
 
-        if (!validationResult.isEmpty()) {
-            ret.setErrorList(validationResult);
-            ret.setStatus(0);
-            ret.setValue(dto);
-
-            return ret;
-        }
+        if (!validationResult.isEmpty())
+            return ServiceReturn.returnError("Validation error", 0, validationResult, dto);
 
         validationResult.clear();
         List<RestaurantType> restaurantTypesList = new ArrayList<>();

@@ -2,6 +2,7 @@ package com.example.restaurantapi.model;
 
 import com.example.restaurantapi.dto.item.CreateItemDto;
 import com.example.restaurantapi.dto.item.UpdateItemDto;
+import com.example.restaurantapi.service.TableService;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;

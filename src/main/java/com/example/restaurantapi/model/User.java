@@ -1,21 +1,19 @@
 package com.example.restaurantapi.model;
 
-import com.example.restaurantapi.dto.user.LoginUserDto;
 import com.example.restaurantapi.dto.user.RegisterUserDto;
 import com.example.restaurantapi.dto.user.UserInformationDto;
+import com.example.restaurantapi.service.TableService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.*;
 
 @Data
@@ -61,6 +59,8 @@ public class User implements UserDetails, Serializable {
     @OneToMany(mappedBy = "user_id")
     private List<Restaurant> restaurants;
 
+    @OneToMany(cascade = CascadeType.REMOVE,mappedBy = "user")
+    private List<Log> logs;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

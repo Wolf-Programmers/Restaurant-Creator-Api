@@ -38,26 +38,19 @@ public class EmployeeService {
         ServiceReturn ret = new ServiceReturn();
         validationResult.clear();
         validationResult = validationService.addEmployeeValidation(dto);
-        if (validationResult.size() > 0) {
-            ret.setMessage("Wystąpiły błedy");
-            ret.setValue(dto);
-            ret.setErrorList(validationResult);
-            return ret;
-        }
+        if (employeeRepository.findEmployeeByEmail(dto.getEmail()).isPresent() || employeeRepository.findEmployeeByPhoneNumber(dto.getPhoneNumber()).isPresent())
+            return ServiceReturn.returnError("Employee with given email or phone number already exist", 0, dto);
+
+        if (validationResult.size() > 0)
+            return ServiceReturn.returnError("Validation error", -1, validationResult, dto);
 
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(dto.getRestaurantId());
-        if (!optionalRestaurant.isPresent()) {
-            ret.setMessage("Nie znaleziono takiej restauracji");
-            ret.setValue(dto);
-            return ret;
-        }
+        if (!optionalRestaurant.isPresent())
+            return ServiceReturn.returnError("Can't find restaurant with given id", 0,dto);
 
         Optional<EmployeeRole> optionalEmployeeRole = employeeRoleRepository.findById(dto.getEmployeeRoleId());
-        if (!optionalEmployeeRole.isPresent()) {
-            ret.setMessage("Nie znaleziono takiej roli użytkownika w bazie danych");
-            ret.setValue(dto);
-            return ret;
-        }
+        if (!optionalEmployeeRole.isPresent())
+            return ServiceReturn.returnError("Can't find employee role with given id", 0,dto);
 
         Employee employee = Employee.of(dto);
         employee.setEmployeeRole(optionalEmployeeRole.get());
@@ -67,15 +60,11 @@ public class EmployeeService {
 
         try {
             Employee createdEmployee = employeeRepository.save(employee);
-            ret.setValue(CreatedEmployeeDto.of(createdEmployee));
-            ret.setStatus(1);
+            return ServiceReturn.returnInformation("Employee saved", 1,CreatedEmployeeDto.of(createdEmployee));
         } catch (Exception ex) {
-            ret.setMessage("Err. add employee" + ex.getMessage());
-            ret.setStatus(-1);
+            return ServiceReturn.returnError("Err. add employee" + ex.getMessage(), -1);
         }
 
-
-        return ret;
     }
 
     /**
@@ -88,11 +77,9 @@ public class EmployeeService {
         ServiceReturn ret = new ServiceReturn();
 
         List<Employee> employeeList = employeeRepository.findByRestaurantId(restaurantId);
-        if (employeeList.isEmpty()) {
-            ret.setMessage("Brak pracowników");
-            ret.setStatus(0);
-            return ret;
-        }
+        if (employeeList.isEmpty())
+            return ServiceReturn.returnError("Can't find employees", 0);
+
 
         List<EmployeeInformationDto> employeeInformationDtoList = employeeList.stream()
                 .map(x -> EmployeeInformationDto.of(x)).collect(Collectors.toList());
@@ -111,11 +98,9 @@ public class EmployeeService {
     public ServiceReturn getEmployee(int employeeId) {
         ServiceReturn ret = new ServiceReturn();
         Optional<Employee> employeeOptional = employeeRepository.findById(employeeId);
-        if (!employeeOptional.isPresent()) {
-            ret.setMessage("Nie znaleziono takiego pracownika");
-            ret.setStatus(0);
-            return ret;
-        }
+        if (!employeeOptional.isPresent())
+            return ServiceReturn.returnError("Can't find employee with given id", 0, employeeId);
+
         EmployeeInformationDto employeeInformationDto = EmployeeInformationDto.of(employeeOptional.get());
         ret.setValue(employeeInformationDto);
         ret.setStatus(1);
@@ -128,38 +113,27 @@ public class EmployeeService {
      * @return EmployeeInformationDto
      */
     public ServiceReturn updateEmployee(EmployeeInformationDto dto) {
-      ServiceReturn ret = new ServiceReturn();
+        ServiceReturn ret = new ServiceReturn();
         Optional<Employee> optionalEmployee = employeeRepository.findById(dto.getId());
-        if (!optionalEmployee.isPresent()) {
-            ret.setMessage("Nie znaleziono takiego użytkownika");
-            ret.setStatus(0);
-            return ret;
-        }
+        if (!optionalEmployee.isPresent())
+            return ServiceReturn.returnError("Can't find employee with given id", 0, dto.getId());
+
         Optional<EmployeeRole> optionalEmployeeRole = employeeRoleRepository.findById(dto.getEmployeeRoleId());
-        if (!optionalEmployeeRole.isPresent()) {
-            ret.setMessage("Nie znaleziono takiej roli dla pracownika");
-            ret.setStatus(0);
-            return ret;
-        }
+        if (!optionalEmployeeRole.isPresent())
+            return ServiceReturn.returnError("Can't find employee role with given id", 0, dto.getEmployeeRoleId());
+
         dto.setEmployeeRoleModel(optionalEmployeeRole.get());
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(dto.getEmployeeRestaurantId());
-        if (!optionalRestaurant.isPresent()) {
-            ret.setMessage("Nie znaleziono takiej restauracji");
-            ret.setStatus(0);
-            return ret;
-        }
+        if (!optionalRestaurant.isPresent())
+            return ServiceReturn.returnError("Can't find restaurant with given id", 0, dto.getEmployeeRestaurantId());
+
         dto.setEmployeeRestaurantModel(optionalRestaurant.get());
         try {
             Employee employee = employeeRepository.save(Employee.updateEmployee(optionalEmployee.get(), dto));
-            ret.setValue(EmployeeInformationDto.of(employee));
-            ret.setStatus(1);
+            return ServiceReturn.returnInformation("Update employee success", 1, EmployeeInformationDto.of(employee));
         } catch (Exception ex) {
-            ret.setMessage("Err. update employee " + ex.getMessage());
-            ret.setStatus(-1);
+            return ServiceReturn.returnError("Err. update employee" + ex.getMessage(), -1);
         }
-
-
-        return ret;
     }
 
     /**
@@ -170,6 +144,8 @@ public class EmployeeService {
     public ServiceReturn getRoles() {
         ServiceReturn ret = new ServiceReturn();
         List<EmployeeRole> employeeRoles = employeeRoleRepository.findAll();
+        if (employeeRoles.isEmpty())
+            return ServiceReturn.returnError("Can't find employee roles", -1, employeeRoles);
         ret.setValue(employeeRoles);
         ret.setStatus(1);
 
@@ -186,11 +162,9 @@ public class EmployeeService {
     public ServiceReturn getEmployeeByOwner(int ownerId) {
         ServiceReturn ret = new ServiceReturn();
         Optional<User> userOptional = userRepository.findById(ownerId);
-        if (!userOptional.isPresent()) {
-            ret.setMessage("Nie znaleziono takiego użytkownika");
-            ret.setStatus(0);
-            return ret;
-        }
+        if (!userOptional.isPresent())
+            return ServiceReturn.returnError("Can't find user with given id", 0, ownerId);
+
 
         List<Restaurant> restaurantList = userOptional.get().getRestaurants();
 
@@ -202,9 +176,7 @@ public class EmployeeService {
             ret.setStatus(1);
             return ret;
         } else {
-            ret.setMessage("Uzytkownik nie posiada żadnych resturacji");
-            ret.setStatus(0);
-            return ret;
+            return ServiceReturn.returnError("Can't find any restaurant for user", 0, ownerId);
         }
     }
 
@@ -219,18 +191,14 @@ public class EmployeeService {
         Optional<Employee> optionalEmployee = employeeRepository.findById(deleteEmployee);
         if (optionalEmployee.isPresent()) {
             try {
-                    employeeRepository.delete(optionalEmployee.get());
-                    ret.setStatus(1);
+                employeeRepository.delete(optionalEmployee.get());
+                ret.setStatus(1);
             } catch (Exception ex) {
-                ret.setMessage(ex.getMessage());
-                ret.setStatus(-1);
-                return  ret;
+                return ServiceReturn.returnError("Err. delete employee" + ex.getMessage(), -1, deleteEmployee);
             }
         } else {
-            ret.setMessage("Nie znaleziono takiego pracownika");
-            ret.setStatus(0);
-            return ret;
+            return ServiceReturn.returnError("Can't find employee with given id", 0, deleteEmployee);
         }
-       return ret;
+        return ret;
     }
 }

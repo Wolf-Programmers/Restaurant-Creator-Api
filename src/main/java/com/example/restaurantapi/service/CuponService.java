@@ -18,12 +18,13 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class CuponService  {
+public class CuponService {
     private final CuponRepository cuponRepository;
     private Map<String,String> validationResult = new HashMap<String, String>();
     private final ValidationService validationService;
     private final RestaurantRepository restaurantRepository;
     private final UserRepository userRepository;
+    private final LogService logService;
 
     /**
      * Create cupon for restaurnat
@@ -37,21 +38,18 @@ public class CuponService  {
         Optional<Cupon> optionalCupon = cuponRepository.findByCuponCode(createCuponDto.getCuponCode());
 
         if (optionalCupon.isPresent()) {
-            ret.setStatus(-1);
-            ret.setMessage("Ten kod został już utworzony");
-            return ret;
+            return ServiceReturn.returnError("Coupon already exist", -1);
         }
         Optional<Restaurant> optionalRestasurant = restaurantRepository.findById(createCuponDto.restaurantId);
-        //TODO blad
+        if (!optionalRestasurant.isPresent())
+            return ServiceReturn.returnError("Can't find restaurant with given id", -1);
+
         createCuponDto.setRestaurant(optionalRestasurant.get());
 
         validationResult = validationService.addCuponValidation(createCuponDto);
 
         if (validationResult.size() > 0) {
-            ret.setStatus(-1);
-            ret.setErrorList(validationResult);
-
-            return ret;
+            return ServiceReturn.returnError("Validation error", -1, validationResult);
         } else {
 
             try {
@@ -59,8 +57,7 @@ public class CuponService  {
                 ret.setStatus(1);
                 ret.setValue(CreatedCuponDto.of(createdCupon));
             } catch (Exception ex) {
-                ret.setMessage("Create cupon: " + ex.getMessage());
-                ret.setStatus(-1);
+                return ServiceReturn.returnError("Err. create coupon: " + ex.getMessage(), -1);
             }
 
             return ret;
@@ -75,56 +72,40 @@ public class CuponService  {
     public  ServiceReturn updateCoupon(String coupon) {
         ServiceReturn ret = new ServiceReturn();
         Optional<Cupon> optionalCupon = cuponRepository.findByCuponCode(coupon);
+
         if (optionalCupon.isPresent()) {
             try {
                 Cupon cupon = cuponRepository.save(Cupon.updateCoupon(optionalCupon.get()));
                 if (cupon.getMaxUses() == 0) {
                     deleteCoupon(cupon.getId());
                 }
-                ret.setValue(cupon.getValue());
-                ret.setStatus(1);
+                return ServiceReturn.returnInformation("Coupon updated", 1, cupon.getValue());
             } catch (Exception ex) {
-                ret.setMessage("Err: updateCoupn: " + coupon);
-                ret.setStatus(-1);
+                return ServiceReturn.returnError("Err. update coupon: " + ex.getMessage(), -1);
             }
         } else {
-            ret.setStatus(0);
-            ret.setMessage("Kupon już nie ważny");
+            return ServiceReturn.returnInformation("Coupon expired", 0);
         }
-        return ret;
     }
 
     public ServiceReturn editCoupon(UpdateCouponDto updateCouponDto) {
-        ServiceReturn ret = new ServiceReturn();
 
         Optional<Cupon> optionalCupon = cuponRepository.findById(updateCouponDto.getId());
-        if (!optionalCupon.isPresent()) {
-            ret.setMessage("Nie znaleziono takiego kuponu");
-            ret.setStatus(0);
-            ret.setValue(updateCouponDto);
-            return ret;
-        }
+        if (!optionalCupon.isPresent())
+            return ServiceReturn.returnInformation("Coupon with given id doesn't exist", 0, updateCouponDto);
 
+        if (!restaurantRepository.findById(updateCouponDto.getRestaurantId()).isPresent())
+            return ServiceReturn.returnInformation("Restaurant with given id doesn't exist", 0, updateCouponDto);
 
-        if (!restaurantRepository.findById(updateCouponDto.getRestaurantId()).isPresent()) {
-            ret.setMessage("Nie znaleziono takiej restauracji");
-            ret.setStatus(0);
-            ret.setValue(updateCouponDto);
-            return ret;
-        }
         updateCouponDto.setRestaurant(restaurantRepository.findById(updateCouponDto.getRestaurantId()).get());
-
 
         try {
             Cupon cupon = cuponRepository.save(Cupon.editCupon(optionalCupon.get(), updateCouponDto));
-            ret.setValue(CreatedCuponDto.of(cupon));
-            ret.setStatus(1);
+            return ServiceReturn.returnInformation("Coupon edited" , 1, CreatedCuponDto.of(cupon));
         } catch (Exception ex) {
-            ret.setStatus(-1);
-            ret.setMessage(ex.getMessage());
+            return ServiceReturn.returnError("Err. edit coupon value: " + ex.getMessage(), -1);
         }
 
-        return ret;
     }
     /**
      * Delete specific coupon
@@ -133,21 +114,15 @@ public class CuponService  {
      */
     public ServiceReturn deleteCoupon(int couponId) {
         ServiceReturn ret = new ServiceReturn();
-        if (!cuponRepository.findById(couponId).isPresent()) {
-            ret.setMessage("nie znaleziono takiego kuponu");
-            ret.setStatus(0);
-            return ret;
-        }
+        if (!cuponRepository.findById(couponId).isPresent())
+            return ServiceReturn.returnError("Can't find coupon with given id", 0,couponId);
         try {
             cuponRepository.deleteById(couponId);
-            ret.setMessage("Usunieto kupon o id: " + couponId);
-            ret.setStatus(1);
+            return ServiceReturn.returnInformation("Deleted coupon", 1, couponId);
         } catch (Exception ex) {
-            ret.setMessage(ex.getMessage());
-            ret.setStatus(-1);
-
+            return ServiceReturn.returnError("Err. delete coupon",-1, couponId);
         }
-        return  ret;
+
     }
 
     /**
@@ -157,15 +132,14 @@ public class CuponService  {
      */
     public ServiceReturn getAllCoupons(int userId) {
         ServiceReturn ret = new ServiceReturn();
+        List<CreatedCuponDto> retCupoon = new ArrayList<>();
         Optional<User> optionalUser = userRepository.findById(userId);
-        if (!optionalUser.isPresent()) {
-            ret.setStatus(0);
-            ret.setMessage("Nie znaleziono takiego właściciela");
-            return ret;
-        }
+        if (!optionalUser.isPresent())
+            return ServiceReturn.returnError("Can't find owner with given id", 0, userId);
+
 
         List<Restaurant> restaurantList = optionalUser.get().getRestaurants();
-        List<CreatedCuponDto> retCupoon = new ArrayList<>();
+
         for (Restaurant res : restaurantList) {
             List<Cupon> c = cuponRepository.findCuponByRestaurant(res);
             for (Cupon cupon : c) {
@@ -175,4 +149,9 @@ public class CuponService  {
         ret.setValue(retCupoon);
         return ret;
     }
+
+
+
+
+
 }

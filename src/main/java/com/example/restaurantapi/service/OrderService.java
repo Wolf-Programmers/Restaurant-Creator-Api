@@ -1,5 +1,6 @@
 package com.example.restaurantapi.service;
 
+import com.example.restaurantapi.dto.item.ItemInformationDto;
 import com.example.restaurantapi.dto.order.OrderInformationDto;
 import com.example.restaurantapi.dto.order.PlaceOrderDto;
 import com.example.restaurantapi.dto.order.UpdateOrderStatusDto;
@@ -34,27 +35,18 @@ public class OrderService {
         ServiceReturn ret = new ServiceReturn();
         validationResult.clear();
         validationResult = validationService.placeOrderValidataion(dto);
-        if (validationResult.size() > 0) {
-            ret.setMessage("Błędy");
-            ret.setStatus(0);
-            ret.setErrorList(validationResult);
-            ret.setValue(dto);
-            return ret;
-        }
+        if (validationResult.size() > 0)
+            return ServiceReturn.returnError("Validation error", 0, validationResult, dto);
+
         Optional<Restaurant> restaurantOptional  = restaurantRepository.findById(dto.getRestaurantId());
-        if (!restaurantOptional.isPresent()) {
-            ret.setMessage("Nie znaleziono takiej restauracji");
-            ret.setStatus(0);
-            return ret;
-        }
+        if (!restaurantOptional.isPresent())
+            return ServiceReturn.returnError("Can't find restaurant with given id" , dto.getRestaurantId());
         dto.setRestaurant(restaurantOptional.get());
         //Get items by id
         ServiceReturn itemsRet = getItems(dto.getItemsList());
-        if (itemsRet.getStatus() == -1) {
-            ret.setMessage("Niestety nie posiadamy takiego przedmiotu w menu");
-            ret.setValue(0);
-            return ret;
-        }
+        if (itemsRet.getStatus() == -1)
+            return ServiceReturn.returnInformation("Can't find item with given id" , dto.getRestaurantId());
+
         dto.setItemsListModel((List<Item>)itemsRet.getValue());
 
         if (dto.getCouponCode() != null && dto.getCouponCode().trim().length() > 3) {
@@ -75,18 +67,16 @@ public class OrderService {
         Optional<OrderStatus> orderStatus = orderStatusRepository.findById(1);
         if (!orderStatus.isPresent()) {
             validationResult.put("Status", "Nie znaleziono takiego statusu w bazie danych");
-            ret.setErrorList(validationResult);
-            ret.setValue(dto);
-            return ret;
+            return ServiceReturn.returnError("Validation error", 0, validationResult, dto);
         }
+
         dto.setOrderStatus(orderStatus.get());
         try {
             Order order = orderRepository.save(Order.of(dto));
             ret.setValue(OrderInformationDto.of(order));
             ret.setStatus(1);
         } catch (Exception ex) {
-            ret.setMessage("Err. Order problem: " + ex.getMessage());
-            ret.setStatus(-1);
+            return ServiceReturn.returnError("Err. place order " + ex.getMessage() , -1);
         }
 
 
@@ -96,11 +86,8 @@ public class OrderService {
     public ServiceReturn getOrdersForRestaurant(int id) {
         ServiceReturn ret = new ServiceReturn();
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(id);
-        if (!optionalRestaurant.isPresent()) {
-            ret.setMessage("Nie znaleziono takiej restauracji");
-            ret.setStatus(0);
-            return ret;
-        }
+        if (!optionalRestaurant.isPresent())
+            return ServiceReturn.returnInformation("Can't find restaurant with given id" , id);
 
        List<Order> orderList = orderRepository.findAllByRestaurant(optionalRestaurant.get());
         List<OrderInformationDto> orderInformationDtos = orderList.stream()
@@ -113,18 +100,12 @@ public class OrderService {
     public ServiceReturn getOrdersForRestaurantByStatus(int restaurantId, int statusId) {
         ServiceReturn ret = new ServiceReturn();
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(restaurantId);
-        if (!optionalRestaurant.isPresent()) {
-            ret.setMessage("Nie znaleziono takiej restauracji");
-            ret.setStatus(0);
-            return ret;
-        }
+        if (!optionalRestaurant.isPresent())
+            return ServiceReturn.returnInformation("Can't find restaurant with given id" , restaurantId);
 
         Optional<OrderStatus> orderStatus = orderStatusRepository.findById(statusId);
-        if (!orderStatus.isPresent()) {
-            ret.setMessage("Nie znaleziono takiego statusu zamowienia");
-            ret.setStatus(0);
-            return ret;
-        }
+        if (!orderStatus.isPresent())
+            return ServiceReturn.returnInformation("Can't find order status with given id" , statusId);
 
         List<Order> orderList = orderRepository.findAllByRestaurant(optionalRestaurant.get());
         List<OrderInformationDto> orderInformationDtos = orderList.stream().filter(x -> x.getOrderStatus().getId() == statusId)
@@ -137,11 +118,8 @@ public class OrderService {
     public ServiceReturn getOrder(int id) {
         ServiceReturn ret = new ServiceReturn();
         Optional<Order> optionalOrder = orderRepository.findById(id);
-        if (!optionalOrder.isPresent()) {
-            ret.setMessage("Nie znaleziono takiego zamówienia");
-            ret.setValue(0);
-            return ret;
-        }
+        if (!optionalOrder.isPresent())
+            return ServiceReturn.returnInformation("Can't find order  with given id" , id);
         OrderInformationDto orderInformationDto = OrderInformationDto.of(optionalOrder.get());
         ret.setValue(orderInformationDto);
         ret.setStatus(1);
@@ -185,23 +163,21 @@ public class OrderService {
         }
 
         Optional<OrderStatus> optionalOrderStatus = orderStatusRepository.findById(dto.getStatusId());
-        if (!optionalOrderStatus.isPresent()) {
-            validationResult.put("Status", "Nie znaleziono takiego statusu");
-            ret.setErrorList(validationResult);
-            ret.setValue(dto);
-        }
+        if (!optionalOrderStatus.isPresent())
+            return ServiceReturn.returnInformation("Can't find order status with given id" , dto.getStatusId());
         dto.setOrderStatus(optionalOrderStatus.get());
         try {
             Order order = orderRepository.save(Order.updateOrderStatus(optionalOrder.get(), dto));
             ret.setValue(OrderInformationDto.of(order));
 
         } catch (Exception ex) {
-            ret.setMessage("Err. update status problem " + ex.getMessage());
+            return ServiceReturn.returnError("Err. update order status " + ex.getMessage() , -1);
 
         }
 
         return ret;
     }
+
 
 
 

@@ -2,6 +2,7 @@ package com.example.restaurantapi.model;
 
 import com.example.restaurantapi.dto.cupon.CreateCuponDto;
 import com.example.restaurantapi.dto.cupon.UpdateCouponDto;
+import com.example.restaurantapi.service.TableService;
 import lombok.Data;
 
 import javax.persistence.*;

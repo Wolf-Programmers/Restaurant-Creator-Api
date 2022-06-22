@@ -45,43 +45,31 @@ public class ItemService {
         validationResult.clear();
 
         validationResult = validationService.itemValidation(createItemDto);
-        if (validationResult.size() > 0) {
-            ret.setStatus(-1);
-            ret.setErrorList(validationResult);
-            ret.setValue(createItemDto);
-
-            return ret;
-        }
+        if (validationResult.size() > 0)
+            return ServiceReturn.returnError("Validation error", -1, validationResult, createItemDto);
 
         Item item = Item.of(createItemDto);
 
         //get restaurant
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById((createItemDto.getRestaurantId()));
-        if (!optionalRestaurant.isPresent()) {
-            ret.setStatus(0);
-            ret.setMessage("Nie znaleziono takiej restauracji");
-            return ret;
-        }
+        if (!optionalRestaurant.isPresent())
+            return ServiceReturn.returnError("Can't find restaurant with given id", 0, createItemDto.getRestaurantId());
+
         item.setRestaurant(optionalRestaurant.get());
         //Get itemType
         Optional<ItemType> optionalItemType = itemTypeRepository.findById(createItemDto.getItemType());
-        if (!optionalItemType.isPresent()) {
-            ret.setMessage("Nie znaleziono takiego rodzaju posiałku");
-            ret.setValue(0);
-            return ret;
-        }
+        if (!optionalItemType.isPresent())
+            return ServiceReturn.returnError("Can't find item type with given id", 0, createItemDto.getItemType());
 
         item.setItemType(optionalItemType.get());
         try {
             Item createdItem = itemRepository.save(item);
-
             CreatedItemDto createdItemDto = CreatedItemDto.of(createdItem);
-
             ret.setValue(createdItemDto);
             ret.setStatus(1);
         } catch (Exception ex) {
-            ret.setMessage("Err. create item " + ex.getMessage());
-            ret.setStatus(-1);
+            return ServiceReturn.returnError("Err. create item " + ex.getMessage(), -1);
+
         }
 
         return ret;
@@ -100,21 +88,16 @@ public class ItemService {
 
         //Find restaurant
         Optional<Restaurant> restaurantOptional = restaurantRepository.findById(restaurantId);
-        if (!restaurantOptional.isPresent()) {
-            ret.setStatus(0);
-            ret.setMessage("Nie znaleziono podanej restauracji");
-            return ret;
-        }
+        if (!restaurantOptional.isPresent())
+            return ServiceReturn.returnError("Can't find restaurant with given id", 0, restaurantId);
 
         //Find item by id
         Optional<Item> itemOptional = itemRepository.findById(itemId);
-        if (!itemOptional.isPresent()) {
-            ret.setStatus(0);
-            ret.setMessage("Nie znaleziono podanego przedmiotu");
-            return ret;
-        }
+        if (!itemOptional.isPresent())
+            return ServiceReturn.returnError("Can't find item with given id", 0, itemId);
 
         CreatedItemDto itemInformation = CreatedItemDto.of(itemOptional.get());
+        ret.setStatus(1);
         ret.setValue(itemInformation);
         return ret;
     }
@@ -132,28 +115,20 @@ public class ItemService {
 
         //Find restaurant
         Optional<Restaurant> restaurantOptional = restaurantRepository.findById(restaurantId);
-        if (!restaurantOptional.isPresent()) {
-            ret.setStatus(0);
-            ret.setMessage("Nie znaleziono podanej restauracji");
-            return ret;
-        }
+        if (!restaurantOptional.isPresent())
+            return ServiceReturn.returnError("Can't find item with given id", 0, restaurantId);
 
         //Find item by name
         List<Item> optionalItem = itemRepository.findByTitleContaining(itemName);
-        if (optionalItem.size() == 0) {
-            ret.setStatus(0);
-            ret.setMessage("Nie znaleziono takich przedmiotów");
-            return ret;
-        }
+        if (optionalItem.isEmpty())
+            return ServiceReturn.returnError("Can't find items ", 0, itemName);
 
 
         infoItemList = optionalItem.stream().filter(x -> x.getRestaurant().getId() == restaurantId)
                 .map(x -> CreatedItemDto.of(x)).collect(Collectors.toList());
 
-        if (infoItemList.size() == 0) {
-            ret.setMessage("Nie znaleziono żadnych dań w podanej restauracji");
-            return ret;
-        }
+        if (infoItemList.isEmpty())
+            return ServiceReturn.returnError("Can't find items ", 0, itemName);
         ret.setValue(infoItemList);
         return ret;
     }
@@ -171,17 +146,13 @@ public class ItemService {
 
         //Get restaurant
         Optional<Restaurant> restaurantOptional = restaurantRepository.findById(restaurantId);
-        if (!restaurantOptional.isPresent()) {
-            ret.setMessage("Nie znaleziono takiej restauracji");
-            return ret;
-        }
+        if (!restaurantOptional.isPresent())
+            return ServiceReturn.returnError("Can't find restaurant with given id", 0, restaurantId);
 
         //Get item by type
         List<Item> itemsList = itemRepository.findByItemTypeId(typeId);
-        if (itemsList.size() == 0) {
-            ret.setMessage("Nie znaleziono żadnych posiłków");
-            return ret;
-        }
+        if (itemsList.isEmpty())
+            return ServiceReturn.returnError("Can't find items ", 0, typeId);
 
         itemsInfo = itemsList.stream().filter(x -> x.getRestaurant().getId() == restaurantId)
                 .map(x -> CreatedItemDto.of(x)).collect(Collectors.toList());
@@ -194,38 +165,28 @@ public class ItemService {
     public ServiceReturn updateItem(UpdateItemDto dto) {
         ServiceReturn ret = new ServiceReturn();
         Optional<Item> optionalItem = itemRepository.findById(dto.getId());
-        if (!optionalItem.isPresent()) {
-            ret.setMessage("Niestety nie znaleziono takiego przedmiotu");
-            ret.setStatus(0);
-            return ret;
-        }
-        Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(dto.getRestaurantId());
-        if (!optionalRestaurant.isPresent()){
-            ret.setMessage("Niestety nie znaleziono takiej retauracji");
-            ret.setStatus(0);
-            return ret;
-        }
+        if (!optionalItem.isPresent())
+            return ServiceReturn.returnError("Can't find item with given id ", 0, dto.getId());
 
-        if (!itemBelongToRestaurant(dto.getId(), optionalRestaurant.get().getItems())) {
-            ret.setMessage("Ta pozycja nie należy do podanej restauracji");
-            ret.setStatus(0);
-            return ret;
-        }
+        Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(dto.getRestaurantId());
+        if (!optionalRestaurant.isPresent())
+            return ServiceReturn.returnError("Can't find restaurant with given id ", 0, dto.getId());
+
+        if (!itemBelongToRestaurant(dto.getId(), optionalRestaurant.get().getItems()))
+            return ServiceReturn.returnError("Can't find item in restaurant with given id ", 0, dto.getId());
+
         dto.setRestaurant(optionalRestaurant.get());
 
         Optional<ItemType> optionalItemType = itemTypeRepository.findById(dto.getItemTypeId());
-        if (!optionalItemType.isPresent()) {
-            ret.setMessage("Nie znaleziono takiego typu menu");
-            ret.setStatus(0);
-            return ret;
-        }
+        if (!optionalItemType.isPresent())
+            return ServiceReturn.returnError("Can't find item with given id ", 0, dto.getItemTypeId());
         dto.setItemType(optionalItemType.get());
         try {
             Item item = itemRepository.save(Item.updateItem(optionalItem.get(), dto));
             ret.setValue(CreatedItemDto.of(item));
             ret.setStatus(1);
         } catch (Exception ex) {
-            ret.setMessage("Err. update item " + ex.getMessage());
+            return ServiceReturn.returnError("Err. update item" + ex.getMessage(), -1);
         }
 
 
@@ -237,31 +198,21 @@ public class ItemService {
     public ServiceReturn deleteItem(int itemId, int restaurantId) {
         ServiceReturn ret = new ServiceReturn();
         Optional<Item> optionalItem = itemRepository.findById(itemId);
-        if (!optionalItem.isPresent()) {
-            ret.setMessage("Nie znaleziono takiego przedmiotu");
-            ret.setStatus(0);
-            return  ret;
-        }
+        if (!optionalItem.isPresent())
+            return ServiceReturn.returnError("Can't find item with given id ", 0, itemId);
 
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(restaurantId);
-        if (!optionalRestaurant.isPresent()) {
-            ret.setMessage("Nie znaleziono takiej restauracji");
-            ret.setStatus(0);
-            return  ret;
-        }
+        if (!optionalRestaurant.isPresent())
+            return ServiceReturn.returnError("Can't find restaurant with given id ", 0, restaurantId);
 
-        if (!itemBelongToRestaurant(itemId, optionalRestaurant.get().getItems())) {
-            ret.setMessage("Ten przedmiot nie należy do tej restaurcji");
-            ret.setStatus(0);
-            return ret;
-        }
+        if (!itemBelongToRestaurant(itemId, optionalRestaurant.get().getItems()))
+            return ServiceReturn.returnError("Can't find item in restaurant with given id ", 0,restaurantId);
         try {
             itemRepository.deleteById(itemId);
             ret.setStatus(1);
             ret.setMessage("Pomyślnie usunięto przedmiot");
         } catch (Exception ex) {
-            ret.setMessage("Err. delete item " + ex.getMessage());
-            ret.setStatus(-1);
+            return ServiceReturn.returnError("Err. delete item" + ex.getMessage(), -1);
         }
         return ret;
     }
@@ -279,11 +230,8 @@ public class ItemService {
         ServiceReturn ret = new ServiceReturn();
 
         Optional<User> optionalUser = userRepository.findById(ownerId);
-        if (!optionalUser.isPresent()) {
-            ret.setMessage("Nie znaleziono takiego użytkownika");
-            ret.setStatus(0);
-            return ret;
-        }
+        if (!optionalUser.isPresent())
+            return ServiceReturn.returnError("Can't find user with given id ", 0,ownerId);
 
         List<Restaurant> restaurantList = optionalUser.get().getRestaurants();
 
@@ -297,7 +245,7 @@ public class ItemService {
     public ServiceReturn getItemTypes() {
         ServiceReturn ret = new ServiceReturn();
 
-        List<ItemType> itemTypes = itemTypeRepository.findAll() ;
+        List<ItemType> itemTypes = itemTypeRepository.findAll();
         List<TypeInformation> typeInformations = itemTypes.stream().map(x -> TypeInformation.of(x)).collect(Collectors.toList());
         ret.setValue(typeInformations);
 

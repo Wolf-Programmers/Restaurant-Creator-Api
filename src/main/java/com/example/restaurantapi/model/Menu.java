@@ -1,12 +1,11 @@
 package com.example.restaurantapi.model;
 
 import com.example.restaurantapi.dto.menu.CreateMenuDto;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.example.restaurantapi.service.TableService;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @Entity

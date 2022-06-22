@@ -3,14 +3,11 @@ package com.example.restaurantapi.model;
 import com.example.restaurantapi.dto.restaurant.AddRestaurantDto;
 import com.example.restaurantapi.dto.restaurant.InfoRestaurantDto;
 import com.example.restaurantapi.dto.restaurant.UpdateRestaurantDto;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.example.restaurantapi.service.TableService;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @Entity
@@ -50,6 +47,9 @@ public class Restaurant {
     @OneToMany(cascade = CascadeType.REMOVE,mappedBy = "restaurant", fetch = FetchType.LAZY)
     private List<Item> items;
 
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "restaurant", fetch = FetchType.LAZY)
+    private List<RestaurantTable> tables;
+    
     @OneToMany(cascade = CascadeType.REMOVE,mappedBy = "restaurant", fetch = FetchType.LAZY)
     private List<Employee> employees;
 
@@ -62,6 +62,9 @@ public class Restaurant {
             inverseJoinColumns = @JoinColumn(name = "restaurant_type_id")
     )
     private List<RestaurantType> restaurantTypes;
+
+   @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "restaurant", fetch = FetchType.LAZY)
+   private List<Report> reports;
 
     public static Restaurant of(AddRestaurantDto dto) {
         Restaurant restaurant = new Restaurant();

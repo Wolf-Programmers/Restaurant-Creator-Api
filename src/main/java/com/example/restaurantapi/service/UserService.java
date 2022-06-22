@@ -43,11 +43,8 @@ public class UserService implements UserDetailsService {
         Optional<User> optionalUser = userRepository.findByEmail(registerUserDto.getEmail());
         Optional<User> optionalUser1 = userRepository.findByPhoneNumber(registerUserDto.getPhone_number());
         if (optionalUser.isPresent() || optionalUser1.isPresent()) {
-            ret.setStatus(0);
             validationResult.put("Uzytkownik", "Użytkownik o podanym numerze lub email już istnieje");
-            ret.setErrorList(validationResult);
-            ret.setValue(registerUserDto);
-            return ret;
+            return ServiceReturn.returnError("User already exist", 0, validationResult, registerUserDto);
         }
         if (!optionalUser.isPresent()) {
             validationResult = validationService.registerValidation(registerUserDto);
@@ -68,26 +65,18 @@ public class UserService implements UserDetailsService {
                 confirmationTokenService.saveConfirmationToken(confirmationToken);
 
             } catch (Exception ex) {
-                ret.setStatus(-1);
-                ret.setMessage("Err. save confirmation token: " + ex.getMessage());
-                return ret;
+                return ServiceReturn.returnError("Err. save confirmation token: " + ex.getMessage(),-1);
             }
 
-            sendConfirmationToken(user.getEmail(), confirmationToken.getConfirmationToken());
-
-
-//                sendConfirmationToken(user.getEmail(), confirmationToken.getConfirmationToken());
+//            sendConfirmationToken(user.getEmail(), confirmationToken.getConfirmationToken());
 
             ret.setStatus(1);
             ret.setErrorList(null);
             ret.setValue(createdUser);
 
         } else {
-
-            ret.setStatus(-1);
             validationResult.put("email", "Email został już wykorzystany");
-            ret.setErrorList(validationResult);
-            return ret;
+            return ServiceReturn.returnError("Validation error", -1, validationResult, registerUserDto);
         }
 
         return ret;
@@ -137,6 +126,7 @@ public class UserService implements UserDetailsService {
             ret.setStatus(0);
             validationResult.put("error", "Nie znaleziono takiego użytkownika");
             ret.setErrorList(validationResult);
+            ret.setMessage("Niepoprawne dane logowania");
             return ret;
         }
 
@@ -158,13 +148,11 @@ public class UserService implements UserDetailsService {
             loginUserDto.setPassword(null);
             ret.setValue(loginUserDto);
             validationResult.put("password", "Proszę wprowadzić poprawne hasło");
+            ret.setMessage("Niepoprawne dane logowania");
             ret.setErrorList(validationResult);
         }
 
-
-
         return ret;
-
 
     }
 
@@ -271,7 +259,7 @@ public class UserService implements UserDetailsService {
         simpleMailMessage.setSubject("Mail confirmation");
         simpleMailMessage.setFrom("<MAIL>");
         simpleMailMessage.setText(mailMessage + activationLink);
-//        emailService.sendEmail(simpleMailMessage);
+        emailService.sendEmail(simpleMailMessage);
 
     }
 

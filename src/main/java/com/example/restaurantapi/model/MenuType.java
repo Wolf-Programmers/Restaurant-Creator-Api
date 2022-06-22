@@ -1,10 +1,10 @@
 package com.example.restaurantapi.model;
 
+import com.example.restaurantapi.service.TableService;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @Entity
